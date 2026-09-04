@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v6</title>
+<title>MRC Protocol v32</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -289,15 +289,17 @@ function seedRelevant(log,seed){
 function seedGrowth(seed){
  const realityDay=seed?.date||RACE_KEY,today=todayStr();
  const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
- // A seed grows from the LIFE MEMORIES that actually move that future forward.
- // SLEP begins on its chosen start/reality day (9/18); the half-marathon seed
- // grows from the protocol start (9/1) toward race day (10/25).
- const growthStart=(text.includes('SLEP')||text.includes('英語'))?realityDay:START_KEY;
- const growthEnd=today<realityDay?today:realityDay;
+ const isSlep=text.includes('SLEP')||text.includes('英語');
+ // SLEP stays dormant as a SEED until 9/18.
+ // On its start day it germinates automatically; from there, SLEP LIFE MEMORY
+ // becomes nourishment and advances SPROUT → GROW → REALITY.
+ const growthStart=isSlep?realityDay:START_KEY;
+ const growthEnd=isSlep?today:(today<realityDay?today:realityDay);
  const memories=(state?.logs||[]).filter(l=>l&&l.date>=growthStart&&l.date<=growthEnd&&seedRelevant(l,seed)).length;
+ if(isSlep && today<realityDay)return {stage:'SEED',cls:'seed',memories:0};
  if(memories>=30)return {stage:'REALITY',cls:'reality',memories};
  if(memories>=7)return {stage:'GROW',cls:'grow',memories};
- if(memories>=1)return {stage:'SPROUT',cls:'sprout',memories};
+ if(isSlep || memories>=1)return {stage:'SPROUT',cls:'sprout',memories};
  return {stage:'SEED',cls:'seed',memories};
 }
 function seedGrowthHTML(seed){const g=seedGrowth(seed);return `<span class="seedGrowth ${g.cls}"><i class="seedGrowthMark"></i>${g.stage}</span>`}
