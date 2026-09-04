@@ -1,1442 +1,300 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v6</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>MRC Protocol</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=JetBrains+Mono:wght@300;500&family=Inter:wght@300;400;500;600&display=swap');
+
 :root{
- --black:#080806;--white:#F5F0E8;--khaki:#8B8570;--beige:#C4B99A;
- --earth:#6B6352;--earthMid:#A89880;--dim:#3A3530;--dimLight:#1A1814;
- --border:#1E1C18;--borderMid:#2E2C28;--muted:#5A5548;--orange:#FC4C02;
- --serif:'Cinzel','Georgia',serif;--mono:'Courier New',monospace;
- --sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+  --black:#050505;
+  --white:#FFFFFF;
+  --khaki:#B8B08D;
+  --beige:#E0D7C6;
+  --border:#2A2A2A;
+  --dim:#666666;
+  --dimLight:#101010;
+  --muted:#444444;
+  --accent:#D4AF37;
+  --green:#6F8B74;
+  --red:#8B6F6F;
+  --serif:'Cinzel',serif;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
 }
-*{box-sizing:border-box}html,body{margin:0;background:var(--black);color:var(--white);font-family:var(--sans);min-height:100%}
-button,input,textarea{font:inherit}button{-webkit-tap-highlight-color:transparent}
-.wrap{max-width:540px;margin:0 auto;min-height:100vh;background:var(--black)}
-.hero{text-align:center;padding:38px 20px 0}
-.brand{font:300 10px var(--serif);letter-spacing:9px;color:var(--muted);margin-bottom:14px}
-.logo{font:400 clamp(62px,16vw,96px)/.9 var(--serif);letter-spacing:.12em}
-.protocol{font:300 9px var(--serif);letter-spacing:8px;color:var(--khaki);margin-top:8px}
-.rule{width:32px;height:1px;background:var(--border);margin:14px auto}
-.tag{font:300 9px var(--serif);letter-spacing:5px;color:var(--dim);margin-bottom:20px}
-.progressLine{height:1px;background:var(--border);position:relative}
-.progressFill{height:100%;background:var(--khaki)}
-.stats{display:flex;justify-content:space-between;align-items:center;padding:13px 0}
-.stat small{display:block;color:var(--dim);font:300 8px var(--serif);letter-spacing:3px;margin-bottom:3px}
-.stat b{font:400 16px var(--mono)}
-.realityCountdown{padding:2px 0 14px;text-align:center}.realityCountdown .days{font:400 12px var(--mono);letter-spacing:2.4px;color:var(--beige)}.realityCountdown .dest{margin-top:5px;font:300 7px var(--serif);letter-spacing:2.4px;color:var(--dim)}
-.metrics{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.metric{flex:1;background:var(--dimLight);padding:9px 3px;text-align:center;border-right:1px solid var(--border)}
-.metric:last-child{border-right:0}.metric small{display:block;color:var(--dim);font:300 8px var(--serif);letter-spacing:2px}.metric b{font:400 12px var(--mono)}
-.tabs{position:sticky;top:0;z-index:30;display:flex;background:var(--black);border-bottom:1px solid var(--border)}
-.tab{flex:1;padding:13px 1px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--dim);font:300 9px var(--serif);letter-spacing:2px;min-height:44px;touch-action:manipulation;cursor:pointer}
-.tab.on{color:var(--white);border-bottom-color:var(--beige)}
-.content{padding:14px}
-.card{border:1px solid var(--borderMid);border-radius:8px;overflow:hidden;margin-bottom:12px}
-.cardhead{padding:8px 13px;background:var(--dimLight);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.eyebrow{color:var(--beige);font:500 10px var(--serif);letter-spacing:3px}
-.muted{color:var(--muted)}.mono{font-family:var(--mono)}.serif{font-family:var(--serif)}
-.cardbody{padding:16px}.phase{font:500 9px var(--serif);letter-spacing:3px;color:var(--khaki);margin-bottom:5px}
-.title{font:400 17px var(--serif);line-height:1.4}.sub{color:var(--muted);font-size:13px;font-style:italic;margin-top:4px}
-.inner{background:var(--dimLight);border:1px solid var(--border);border-radius:5px;padding:12px 14px;margin-top:12px}
-.label{font:500 9px var(--serif);letter-spacing:3px;color:var(--muted);margin-bottom:5px}
-.mission{font:500 12px var(--serif);color:var(--beige);margin-bottom:6px}
-.line{font-size:13px;line-height:1.7}.pace{font:400 11px var(--mono);color:var(--khaki);margin-top:4px}
-.btn{width:100%;padding:12px;border:1px solid var(--border);border-radius:3px;background:transparent;color:var(--muted);font:500 10px var(--serif);letter-spacing:3px;min-height:44px;margin-top:8px}
-.btn.primary{border-color:var(--khaki);color:var(--beige)}
-.btn.done{border-color:var(--beige);background:var(--dimLight);color:var(--white)}
-.c3TraceBtn{transition:transform .08s ease,background .12s ease,border-color .12s ease,color .12s ease}
-.c3TraceBtn:active,.c3TraceBtn.is-pressed{transform:scale(.985);background:rgba(196,185,154,.10);border-color:var(--beige);color:var(--white)}
-.c3TraceBtn.is-loading{background:rgba(196,185,154,.14);border-color:var(--beige);color:var(--white)}
-.week{border:1px solid var(--border);border-radius:5px;margin-bottom:7px;overflow:hidden}
-.week.current{border-color:var(--beige)}.weekrow{display:flex;gap:10px;align-items:center;padding:12px}
-.wbox{width:40px;height:40px;border:1px solid var(--border);background:var(--dimLight);display:grid;place-items:center;border-radius:3px;font:500 14px var(--serif)}
-.weekmain{flex:1;min-width:0}.wphase{font:500 8px var(--serif);letter-spacing:2px;color:var(--khaki)}.wtitle{font:400 13px var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.wmeta{font:10px var(--mono);color:var(--dim);margin-top:2px}
-.day{display:flex;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px}.day.today{border-color:var(--beige);background:var(--dimLight)}
-.dayname{min-width:36px;text-align:center}.jp{font-size:17px}.en{font:8px var(--serif);letter-spacing:1px;color:var(--dim)}
-.daybody{flex:1}.daytype{font:500 9px var(--serif);letter-spacing:1px;color:var(--khaki);margin-bottom:4px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.chip{padding:3px 8px;border:1px solid var(--border);border-radius:20px;background:var(--black);color:var(--muted);font-size:10px}
-.pacerow{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--dimLight);border:1px solid var(--border);border-radius:4px;margin-bottom:4px}
-.pacew{min-width:52px;font:10px var(--serif);color:var(--khaki)}.pacebody{flex:1}.pacetype{font-size:13px}.zone{display:inline-block;padding:1px 6px;border:1px solid #c4b99a44;border-radius:2px;color:var(--beige);font:9px var(--mono);margin-bottom:3px}
-.paceval{text-align:right;font:14px var(--mono);color:var(--beige)}
-.logitem{padding:11px 0;border-bottom:1px solid var(--border)}.logtop{display:flex;justify-content:space-between;gap:10px}.logkm{color:var(--khaki);font:13px var(--mono)}.logdate{color:var(--dim);font:10px var(--mono)}.feel{color:var(--muted);font-size:12px;margin-top:4px}.strava{color:var(--orange);font:700 9px var(--mono);text-decoration:none;display:inline-block;margin-top:6px}
-.logWeather{font:400 8px var(--mono);letter-spacing:1px;color:rgba(196,185,154,.58);white-space:nowrap}.sourceBadge{display:inline-flex;align-items:center;gap:6px;padding:3px 7px;border:1px solid rgba(196,185,154,.16);border-radius:999px;color:rgba(196,185,154,.58);font:400 8px var(--mono);letter-spacing:1px;white-space:nowrap}.sourceDot{width:5px;height:5px;border-radius:50%;background:var(--beige);opacity:.7}.sourceLayer{margin:4px 0 18px;padding:12px 14px;border:1px solid rgba(196,185,154,.14);border-radius:5px;background:rgba(196,185,154,.025)}.sourceGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.sourceNode{padding:8px 9px;border:1px solid rgba(196,185,154,.09);border-radius:4px;font:400 8px var(--mono);letter-spacing:1px;color:rgba(139,133,112,.46);display:flex;justify-content:space-between;gap:7px}.sourceNode.on{color:var(--beige);border-color:rgba(196,185,154,.22)}.sourceNode em{font-style:normal;color:rgba(139,133,112,.38)}.sourceNode.on em{color:rgba(196,185,154,.62)}
-.modal{position:fixed;inset:0;z-index:100;background:rgba(4,4,3,.96);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(10px)}
-.sheet{width:100%;max-width:400px;max-height:86vh;overflow:auto;background:var(--black);border:1px solid var(--borderMid);border-radius:10px}
-.sheetHead{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--dimLight);border-bottom:1px solid var(--border)}
-.close{background:none;border:0;color:var(--muted);font-size:24px}.sheetBody{padding:18px}
-.field{margin-bottom:16px}.field label{display:block;color:var(--muted);font:10px var(--serif);letter-spacing:3px;margin-bottom:7px}.field input,.field textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--border);outline:0;color:var(--white);padding:8px 0;font-family:var(--mono);font-size:15px}.field input::placeholder,.field textarea::placeholder{color:rgba(139,133,112,.28);opacity:1}.field input:placeholder-shown{color:rgba(245,240,232,.26)}.field input:not(:placeholder-shown){color:var(--white)}.field textarea{font-family:var(--sans);font-size:13px;resize:none}.fieldGuide{display:flex;justify-content:space-between;gap:8px;margin-top:5px;font:400 8px var(--mono);letter-spacing:.8px;color:rgba(139,133,112,.42)}.fieldGuide .target{color:rgba(196,185,154,.52)}.fieldGuide .optional{color:rgba(139,133,112,.38)}.paceAutoBox{border-bottom:1px solid rgba(196,185,154,.22);padding:7px 0 9px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}.paceAutoValue{font:15px var(--mono);color:var(--white);letter-spacing:.2px}.paceAutoValue.empty{color:rgba(245,240,232,.26)}.paceAutoBadge{font:400 8px var(--mono);letter-spacing:1.4px;color:rgba(196,185,154,.58);border:1px solid rgba(196,185,154,.18);padding:4px 7px;border-radius:999px;white-space:nowrap}
-.sagebox{text-align:center;padding:20px}.sageMark{width:58px;height:58px;border-radius:50%;border:1px solid var(--khaki);display:grid;place-items:center;margin:0 auto 18px;font:24px var(--serif);color:var(--beige)}.sageText{font:400 17px/2 var(--serif);padding:0 8px}
-.onboard{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 20px}.ob{max-width:380px;width:100%}.obtitle{text-align:center;margin-bottom:35px}.opt{width:100%;text-align:left;padding:18px 20px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--white);margin-bottom:10px}.optname{font:300 15px var(--serif)}.optdays{float:right;color:var(--beige);font:10px var(--serif);border:1px solid var(--borderMid);padding:3px 9px;border-radius:3px}.optdetail{clear:both;color:var(--muted);font-size:13px;line-height:1.6;margin-top:8px}
-
-.rhythm{margin-top:12px;padding:13px 14px 11px;border:1px solid var(--border);border-radius:5px;background:linear-gradient(180deg,#11100d 0%,#0b0a08 100%);overflow:hidden;position:relative}
-.rhythmTop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}.rhythmBpm{font:400 10px var(--mono);letter-spacing:1px;color:var(--khaki);white-space:nowrap}.rhythmStage{height:128px;position:relative;display:flex;align-items:center}.rhythm svg{width:100%;height:100%;display:block;overflow:visible}.rhythm path{fill:none;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;will-change:transform,opacity}.rhythm .bodywave{stroke:var(--white);stroke-width:.56;opacity:var(--op,.82);animation:bodyFollow var(--body-cycle,5.4s) ease-in-out infinite alternate;animation-delay:var(--delay,0s)}.rhythm .heart{stroke:var(--white);stroke-width:1.35;opacity:.98;filter:drop-shadow(0 0 2.2px rgba(255,255,255,.34));animation:heartPulse var(--beat,3.2s) cubic-bezier(.42,0,.58,1) infinite}.rhythm.rest .heart{opacity:.56;animation:restHeart 4.4s ease-in-out infinite}.rhythm.rest .bodywave{animation:restBody 6.8s ease-in-out infinite alternate}.rhythm.encounter{cursor:pointer}.rhythm .sageTrace{stroke:#8f2f2a;stroke-width:1.45;opacity:0;stroke-linecap:round;stroke-dasharray:12 1000;stroke-dashoffset:1012;pointer-events:none}.rhythm.encounter .sageTrace{animation:sageTravel 1.65s ease-out .55s 1 forwards}.rhythmFoot{display:flex;justify-content:flex-start;align-items:center;margin-top:3px}.rhythmMotto{font:300 7px var(--serif);letter-spacing:2.4px;color:var(--dim)}
-@keyframes heartPulse{0%,100%{transform:scaleY(1);opacity:.82}38%{transform:scaleY(1.018);opacity:.88}46%{transform:scaleY(1.105);opacity:1}53%{transform:scaleY(.985);opacity:.9}62%{transform:scaleY(1.025);opacity:.94}}
-@keyframes bodyFollow{0%{transform:translateY(-.6px) scaleY(.985);opacity:calc(var(--op,.72)*.88)}100%{transform:translateY(.6px) scaleY(1.025);opacity:var(--op,.72)}}100%{transform:translateY(1px) scaleY(1.035);opacity:var(--op,.13)}}
-@keyframes restHeart{0%,100%{transform:scaleY(.91);opacity:.42}50%{transform:scaleY(1.055);opacity:.68}}
-@keyframes restBody{0%{transform:translateY(-.5px) scaleY(.975);opacity:calc(var(--op,.72)*.82)}100%{transform:translateY(.5px) scaleY(1.02);opacity:var(--op,.72)}}100%{transform:translateY(.7px) scaleY(1.035);opacity:var(--op,.13)}}
-@keyframes sageTravel{0%{opacity:0;stroke-dashoffset:1012}8%{opacity:1}72%{opacity:.95}100%{opacity:0;stroke-dashoffset:0}}
-@media (prefers-reduced-motion:reduce){.rhythm path,.rhythm .heart,.rhythm .bodywave,.rhythm .sageTrace{animation:none!important}}
-@media(max-width:390px){.content{padding:12px}.logo{font-size:62px}.tab{letter-spacing:1px;font-size:8px}}
-.traceStatus{margin-top:9px;font:7px var(--mono);letter-spacing:1.1px;color:rgba(196,185,154,.48);line-height:1.7}.traceStatus b{font-weight:400;color:rgba(245,240,232,.76)}
-
-.lifeActivityGrid{display:grid;grid-template-columns:1fr;row-gap:0;padding-top:8px;width:100%}.lifeStackGroup{padding:0;border-top:1px solid rgba(196,185,154,.10)}.lifeStackGroup:first-child{border-top:0}.lifeStackHead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;background:transparent;border:0;color:inherit;text-align:left}.lifeStackTitle{font:9px var(--mono);letter-spacing:3px;color:rgba(196,185,154,.52)}.lifeStackSummary{margin-left:auto;min-width:0;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;font:8.5px var(--mono);letter-spacing:1.5px;color:rgba(196,185,154,.62)}.lifeStackChevron{flex:0 0 auto;font:12px var(--mono);color:rgba(196,185,154,.42);transition:transform .2s ease}.lifeStackGroup.open .lifeStackChevron{transform:rotate(45deg)}.lifeStackOptions{display:none;grid-template-columns:1fr;row-gap:12px;padding:0 0 15px}.lifeStackGroup.open .lifeStackOptions{display:grid}.lifeActivityOption{display:flex!important;align-items:center;gap:12px;min-width:0;width:100%;margin:0!important;font:9px var(--mono)!important;letter-spacing:1.8px;color:var(--muted)!important;line-height:1.2}.lifeActivityOption input[type="checkbox"]{appearance:none;-webkit-appearance:none;flex:0 0 18px;width:18px;height:18px;margin:0!important;border:1px solid rgba(196,185,154,.42);border-radius:4px;background:transparent;display:grid;place-items:center}.lifeActivityOption input[type="checkbox"]:checked:after{content:"";width:8px;height:8px;border-radius:2px;background:var(--beige)}.lifeActivityOption span{display:block;min-width:0;white-space:nowrap;overflow:visible}.lifeActivityOption:has(input:checked) span{color:var(--white)}@media(max-width:430px){.lifeActivityOption{gap:10px;font-size:8.5px!important;letter-spacing:1.5px}.lifeStackTitle{font-size:8.5px;letter-spacing:2.6px}}
-
-/* MEMORY CALENDAR — v12.2 repair */
-.memoryHero{padding:22px 26px 8px}
-.memoryJourney{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-top:12px}
-.memoryJourney .big{font:400 18px/1.45 var(--serif);color:var(--white)}
-.memoryJourney .small{font:400 9px/1.7 var(--mono);letter-spacing:1.1px;color:var(--muted);text-align:right;white-space:nowrap}
-.memoryStrip{margin-top:18px;padding-top:13px;border-top:1px solid var(--border)}
-.memoryStripTitle{font:300 8px var(--serif);letter-spacing:2.1px;color:var(--dim);margin-bottom:9px}
-.memoryTraceLine{display:grid;grid-template-columns:repeat(55,minmax(0,1fr));align-items:center;gap:2px;min-height:14px}
-.memoryTraceNode{display:block;height:2px;border-radius:99px;background:rgba(196,185,154,.11)}
-.memoryTraceNode.lived{height:4px;background:rgba(245,240,232,.82);box-shadow:0 0 5px rgba(245,240,232,.16)}
-.memoryTraceNode.today{outline:1px solid rgba(196,185,154,.7);outline-offset:2px}
-.memoryGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px}
-.memoryDow{font:300 7px var(--serif);letter-spacing:1.2px;text-align:center;color:var(--dim);padding-bottom:4px}
-.memoryCell{position:relative;min-height:58px;border:1px solid rgba(196,185,154,.10);border-radius:3px;padding:6px;background:rgba(255,255,255,.008);overflow:hidden}
-.memoryCell.blank{border-color:transparent;background:transparent}
-.memoryCell.future{opacity:.38}
-.memoryCell.lived{border-color:rgba(245,240,232,.25);cursor:pointer;background:rgba(245,240,232,.018)}
-.memoryCell.today{box-shadow:inset 0 0 0 1px rgba(196,185,154,.78)}
-.memoryCell.planted{opacity:.78;border-color:rgba(196,185,154,.26);background:rgba(196,185,154,.025)}
-.plantedSeed{position:absolute;left:6px;bottom:7px;font:300 6px var(--mono);letter-spacing:1px;color:rgba(196,185,154,.78)}
-.seedGrowth{position:absolute;left:6px;right:6px;bottom:6px;display:flex;align-items:center;gap:5px;font:300 5.8px var(--mono);letter-spacing:.8px;color:rgba(196,185,154,.80);white-space:nowrap;overflow:hidden}.seedGrowthMark{width:5px;height:5px;border-radius:50%;border:1px solid rgba(196,185,154,.72);flex:0 0 auto}.seedGrowth.sprout .seedGrowthMark{box-shadow:0 -4px 0 -2px rgba(196,185,154,.72)}.seedGrowth.grow .seedGrowthMark{width:7px;height:7px;box-shadow:0 0 8px rgba(196,185,154,.20)}.seedGrowth.reality .seedGrowthMark{background:rgba(245,240,232,.86);border-color:rgba(245,240,232,.86);box-shadow:0 0 8px rgba(245,240,232,.22)}
-.seedStageCard{margin:0 0 18px;padding:12px 14px;border:1px solid rgba(196,185,154,.14);background:rgba(196,185,154,.025);display:flex;align-items:center;justify-content:space-between;gap:12px}.seedStageName{font:400 10px var(--mono);letter-spacing:2.2px;color:var(--beige)}.seedStageMeta{font:300 7px var(--mono);letter-spacing:1px;color:var(--dim);text-align:right}.seedTargetText{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65!important;min-height:54px}
-
-.seedMemoryLink{margin:16px 0 22px;border-top:1px solid rgba(196,185,154,.11);border-bottom:1px solid rgba(196,185,154,.11);padding:12px 0}
-.seedMemoryLinkHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}
-.seedMemoryLinkTitle{font:300 8px var(--serif);letter-spacing:2.4px;color:var(--beige)}
-.seedMemoryLinkCount{font:300 7px var(--mono);letter-spacing:1.2px;color:var(--dim)}
-.seedMemoryItem{width:100%;display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;padding:10px 0;border:0;border-top:1px solid rgba(196,185,154,.07);background:transparent;text-align:left;color:inherit;cursor:pointer}
-.seedMemoryDate{font:400 7.5px var(--mono);letter-spacing:1px;color:rgba(196,185,154,.55)}
-.seedMemoryAct{font:400 10px var(--sans);color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seedMemoryArrow{font:300 10px var(--mono);color:var(--beige)}
-.seedMemoryEmpty{padding:9px 0 2px;font:300 8px var(--mono);letter-spacing:1px;color:var(--dim)}
-.memorySeedLink{margin:18px 0 4px;border-top:1px solid rgba(196,185,154,.11);border-bottom:1px solid rgba(196,185,154,.11);padding:12px 0}
-.memorySeedHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}
-.memorySeedTitle{font:300 8px var(--serif);letter-spacing:2.4px;color:var(--beige)}
-.memorySeedCount{font:300 7px var(--mono);letter-spacing:1.2px;color:var(--dim)}
-.memorySeedItem{width:100%;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 0;border:0;border-top:1px solid rgba(196,185,154,.07);background:transparent;text-align:left;color:inherit;cursor:pointer}
-.memorySeedMoso{font:400 10px var(--sans);color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.memorySeedStage{font:300 7px var(--mono);letter-spacing:1.2px;color:var(--beige)}
-
-.seedForest{margin:0 26px 22px;padding:18px 18px 14px;border:1px solid rgba(196,185,154,.13);background:rgba(196,185,154,.018)}
-.seedForestHead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}
-.seedForestTitle{font:300 9px var(--serif);letter-spacing:3px;color:var(--beige)}
-.seedForestCount{font:300 7px var(--mono);letter-spacing:1.2px;color:var(--dim)}
-.seedForestList{display:grid;gap:7px}
-.seedForestItem{width:100%;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:12px;padding:12px 0;border:0;border-top:1px solid rgba(196,185,154,.09);background:transparent;text-align:left;color:inherit;cursor:pointer}
-.seedForestDate{font:400 8px var(--mono);letter-spacing:1px;color:rgba(196,185,154,.55)}
-.seedForestMoso{font:400 12px var(--sans);line-height:1.5;color:var(--white)}
-.seedForestStage{font:300 7px var(--mono);letter-spacing:1.2px;color:var(--beige);white-space:nowrap}
-.seedForestHint{margin-top:12px;display:flex;justify-content:space-between;gap:12px;font:300 6.5px var(--mono);letter-spacing:1.1px;color:rgba(139,133,112,.42)}
-/* GROWTH VISUAL — v30: make each future visibly grow from lived memories */
-.seedVisual{position:relative;width:44px;height:34px;display:block;flex:0 0 44px}
-.seedVisualStem{position:absolute;left:21px;bottom:7px;width:1px;height:var(--stem,4px);background:rgba(196,185,154,.72);transform-origin:bottom;box-shadow:0 0 5px rgba(245,240,232,.08)}
-.seedVisualRoot{position:absolute;left:17px;bottom:5px;width:9px;height:4px;border-bottom:1px solid rgba(196,185,154,.34);border-radius:50%}
-.seedVisualLeaf{position:absolute;width:8px;height:4px;border:1px solid rgba(196,185,154,.62);border-radius:100% 0 100% 0;opacity:0;bottom:var(--leafY,13px)}
-.seedVisualLeaf.l{left:13px;transform:rotate(20deg)}.seedVisualLeaf.r{left:22px;transform:scaleX(-1) rotate(20deg)}
-.seedVisualDot{position:absolute;left:18px;bottom:4px;width:7px;height:7px;border:1px solid rgba(196,185,154,.76);border-radius:50%;background:var(--bg)}
-.seedVisual.sprout .seedVisualLeaf.one,.seedVisual.grow .seedVisualLeaf,.seedVisual.reality .seedVisualLeaf{opacity:1}
-.seedVisual.grow .seedVisualStem,.seedVisual.reality .seedVisualStem{background:rgba(245,240,232,.82);box-shadow:0 0 8px rgba(245,240,232,.12)}
-.seedVisual.reality .seedVisualDot{background:rgba(245,240,232,.86);border-color:rgba(245,240,232,.9);box-shadow:0 0 9px rgba(245,240,232,.22)}
-.seedVisual.reality:after{content:"";position:absolute;left:16px;top:1px;width:12px;height:12px;border:1px solid rgba(245,240,232,.42);border-radius:50%;box-shadow:0 0 12px rgba(245,240,232,.12)}
-.seedGrowthTrack{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;margin:0 0 18px;padding:13px 14px;border:1px solid rgba(196,185,154,.14);background:rgba(196,185,154,.025)}
-.seedGrowthTrackText{min-width:0}.seedGrowthTrackTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.seedGrowthTrackStage{font:400 10px var(--mono);letter-spacing:2.2px;color:var(--beige)}.seedGrowthTrackCount{font:300 7px var(--mono);letter-spacing:1px;color:var(--dim)}
-.seedGrowthRail{position:relative;height:2px;margin:10px 0 7px;background:rgba(196,185,154,.10);overflow:visible}.seedGrowthRailFill{height:100%;width:var(--growth,0%);background:rgba(245,240,232,.76);box-shadow:0 0 6px rgba(245,240,232,.12);transition:width .35s ease}.seedGrowthStops{display:flex;justify-content:space-between;font:300 5.8px var(--mono);letter-spacing:.7px;color:rgba(139,133,112,.46)}
-.seedForestItem{grid-template-columns:46px 58px 1fr auto}.seedForestVisual{display:flex;justify-content:center;align-items:center}.seedForestVisual .seedVisual{transform:scale(.72);transform-origin:center}
-@media(max-width:390px){.seedForestItem{grid-template-columns:38px 48px 1fr auto;gap:8px}.seedForestVisual .seedVisual{transform:scale(.62)}.seedForestDate{font-size:7px}.seedForestStage{font-size:6.4px}}
-
-@media(max-width:390px){.seedForest{margin-left:20px;margin-right:20px;padding-left:14px;padding-right:14px}.seedForestItem{grid-template-columns:52px 1fr auto;gap:8px}.seedForestMoso{font-size:11px}}
-
-.memoryCell .d{position:relative;z-index:2;font:400 9px var(--mono);color:var(--muted)}
-.memoryCell.lived .d{color:var(--white)}
-.miniTrace{position:absolute;left:5px;right:5px;bottom:8px;width:calc(100% - 10px);height:24px}
-.miniTrace path{fill:none;stroke:rgba(245,240,232,.82);stroke-width:1.4;vector-effect:non-scaling-stroke}
-.seedDot{position:absolute;left:50%;bottom:16px;width:4px;height:4px;border-radius:50%;background:rgba(196,185,154,.30);transform:translateX(-50%)}
-.weatherMini{position:absolute;right:5px;top:5px;font:7px var(--mono);color:rgba(196,185,154,.65)}
-.memoryLegend{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:12px;font:300 7px var(--mono);letter-spacing:.7px;color:var(--dim)}
-@media(max-width:390px){.memoryHero{padding-left:20px;padding-right:20px}.memoryCell{min-height:52px;padding:5px}.memoryGrid{gap:4px}.memoryJourney .big{font-size:16px}.memoryJourney .small{font-size:8px}}
-
-
-/* v27 · TRUE ONE TAP · MEMORY FIRST */
-.afterglowMoment{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(4,4,3,.88);backdrop-filter:blur(4px);animation:afterglowFade 3.15s ease both}
-.afterglowInner{width:min(78vw,340px);text-align:center;color:var(--beige);font-family:var(--serif)}
-.afterglowPulse{width:76px;height:34px;margin:0 auto 19px;position:relative;filter:drop-shadow(0 0 8px rgba(224,216,190,.22))}
-.afterglowPulse:before{content:"";position:absolute;left:0;right:0;top:16px;height:1px;background:rgba(224,216,190,.18)}
-.afterglowPulse:after{content:"";position:absolute;left:0;right:0;top:7px;height:18px;border-top:1px solid rgba(232,225,201,.8);border-radius:50%;transform:scaleY(.25);animation:afterglowBeat 1.35s ease-in-out 1}
-.afterglowLived{font-size:16px;letter-spacing:.34em;margin-left:.34em}
-.afterglowJa{margin-top:14px;font-size:12px;letter-spacing:.08em;color:rgba(235,232,221,.72);line-height:1.8}
-.afterglowSub{margin-top:16px;font:400 8px var(--mono);letter-spacing:.24em;color:rgba(214,203,166,.28)}
-.afterglowMore{pointer-events:auto;margin-top:22px;border:0;background:transparent;color:rgba(214,203,166,.54);font:400 9px var(--mono);letter-spacing:.2em;padding:8px 12px}
-@keyframes afterglowBeat{0%{transform:scaleY(.18);opacity:.35}34%{transform:scaleY(1.35);opacity:1}64%{transform:scaleY(.38);opacity:.62}100%{transform:scaleY(.18);opacity:.28}}
-@keyframes afterglowFade{0%{opacity:0}12%{opacity:1}78%{opacity:1}100%{opacity:0}}
-/* v24 · quiet growth acknowledgement */
-.growthMoment{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(5,5,4,.16);animation:growthMomentFade 2.35s ease both}
-.growthMomentInner{text-align:center;color:var(--beige);letter-spacing:.28em;font-family:var(--serif);text-transform:uppercase;text-shadow:0 0 24px rgba(214,203,166,.16);animation:growthMomentRise 2.35s ease both}
-.growthMomentLine{width:42px;height:1px;margin:0 auto 18px;background:rgba(214,203,166,.62);box-shadow:0 0 12px rgba(214,203,166,.18)}
-.growthMomentText{font-size:13px;line-height:1.8}
-.growthMomentSub{margin-top:10px;font:400 9px var(--mono);letter-spacing:.24em;color:rgba(214,203,166,.28)}
-@keyframes growthMomentFade{0%{opacity:0}18%{opacity:1}72%{opacity:1}100%{opacity:0}}
-@keyframes growthMomentRise{0%{opacity:0;transform:translateY(7px)}20%{opacity:1;transform:translateY(0)}76%{opacity:1}100%{opacity:0;transform:translateY(-3px)}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--black);color:var(--white);font-family:var(--sans);min-height:100%}
+button{font:inherit}
+#app{min-height:100vh}
+.select-screen{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.select-inner{width:100%;max-width:400px;text-align:center}
+.choose{font-size:10px;color:var(--khaki);letter-spacing:10px;margin-bottom:20px;font-family:var(--serif)}
+.protocol-grid{display:grid;gap:12px}
+.protocol-btn{padding:24px;background:transparent;border:1px solid var(--border);color:var(--white);cursor:pointer;border-radius:4px;font-family:var(--serif);letter-spacing:3px;transition:.15s}
+.protocol-btn:active{transform:scale(.98)}
+.wrap{max-width:520px;margin:0 auto;padding:20px 15px}
+header{padding:40px 0;border-bottom:1px solid var(--border);margin-bottom:30px}
+.eyebrow{color:var(--khaki);letter-spacing:6px;font-size:10px;margin-bottom:8px;font-family:var(--serif)}
+h1{font-family:var(--serif);font-size:30px;margin:0;letter-spacing:2px}
+.mission-sub{color:var(--dim);font-size:11px;margin-top:10px;font-family:var(--mono)}
+.protocol-title{margin-top:20px;color:var(--beige);font-size:12px;line-height:1.7}
+.card{padding:20px;border:1px solid var(--border);margin-bottom:20px;border-radius:4px}
+.today-card{padding:24px;border-color:var(--khaki)}
+.label{color:var(--khaki);font-size:10px;letter-spacing:4px;margin-bottom:14px;font-family:var(--serif)}
+.mono{color:var(--beige);font-family:var(--mono);line-height:2;font-size:12px}
+.quote{margin-top:16px;color:var(--dim);font-style:italic;font-size:12px}
+.weather{border-color:var(--green)}
+.weather .label{color:var(--green)}
+.weather-text{color:var(--beige);line-height:1.7;font-size:13px}
+.navrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:12px}
+.tabs{display:flex;gap:20px;flex-wrap:wrap}
+.tab-btn{background:none;border:none;color:var(--dim);cursor:pointer;letter-spacing:3px;font-size:11px;font-family:var(--serif);padding:0 0 5px}
+.tab-btn.active{color:var(--white);border-bottom:1px solid var(--khaki)}
+.progress-wrap{width:70px;height:70px;position:relative;flex:0 0 70px}
+.progress-wrap svg{display:block}
+.progress-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:16px}
+.week{margin-bottom:16px;padding:20px;border-radius:4px;border:1px solid var(--border);background:transparent}
+.week.current{border-color:var(--khaki);background:var(--dimLight)}
+.week-head{display:flex;justify-content:space-between;margin-bottom:12px;gap:12px}
+.weeknum{color:var(--khaki);font-size:10px;font-family:var(--mono)}
+.phase{margin-top:4px;color:var(--beige);font-family:var(--serif);font-size:15px}
+.load{color:var(--dim);font-size:10px;font-family:var(--mono)}
+.tasks{display:flex;gap:10px}
+.task{flex:1;padding:10px 0;border-radius:2px;cursor:pointer;border:1px solid var(--dim);background:transparent;color:var(--dim);font-size:9px;font-family:var(--mono)}
+.task.done{background:var(--khaki);color:var(--black)}
+.terminate-wrap{text-align:center;margin-top:40px}
+.terminate{background:none;border:none;color:var(--muted);cursor:pointer;font-size:9px;letter-spacing:2px}
+.log-advice{padding:24px}
+.log-advice .advice{color:var(--beige);line-height:1.8;font-style:italic}
+.log-item{padding:15px 0;border-bottom:1px solid var(--border)}
+.log-date{color:var(--dim);font-size:10px;margin-bottom:6px;font-family:var(--mono)}
+.log-text{color:var(--beige);line-height:1.7;font-size:13px}
+.addlog{width:100%;padding:16px;margin-top:20px;border:none;border-radius:4px;background:var(--white);color:var(--black);cursor:pointer;font-family:var(--serif);letter-spacing:2px}
+.schedule{padding:24px;border:1px solid var(--border);line-height:2;color:var(--beige);font-family:var(--mono);font-size:12px}
+footer{margin-top:80px;padding:40px 0;border-top:1px solid var(--border);text-align:center}
+.footer1{color:var(--muted);font-size:9px;letter-spacing:4px;font-family:var(--serif)}
+.footer2{color:var(--muted);font-size:8px;margin-top:12px;font-family:var(--mono)}
+.fade{animation:fade .25s ease}
+@keyframes fade{from{opacity:.15;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:430px){
+  .navrow{align-items:flex-start}
+  .tabs{gap:12px}
+  .task{font-size:8px;padding:10px 3px}
+}
 </style>
-
-
-
-
-
-
-
-
-
-
-<style id="mrc-true-master-css">
-.rhythmStage{height:128px;position:relative;display:flex;align-items:center;overflow:hidden;transform-origin:center center;will-change:transform}
-/* BREATH remains a separate, slow life cycle. */
-.rhythm.rest .rhythmStage{animation:mrcBreath 6.8s cubic-bezier(.45,.05,.55,.95) infinite}
-.rhythm.logged .rhythmStage{animation:mrcBreath 6.0s cubic-bezier(.45,.05,.55,.95) infinite}
-@keyframes mrcBreath{0%,100%{transform:scaleX(.997) scaleY(.970)}50%{transform:scaleX(1.003) scaleY(1.030)}}
-
-/* BASE state keeps the approved immutable MASTER. */
-.mrcTrueMaster{width:100%;height:100%;display:block;object-fit:fill;transform-origin:center center;will-change:filter,opacity,transform;filter:brightness(var(--master-bright,1))}
-.mrcPulseGlow,.mrcPulseBody{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;background:center/100% 100% no-repeat url('mrc_living_rhythm_master.png');transform-origin:center center}
-.rhythm.rest .mrcPulseGlow{animation:mrcPulse var(--beat,.86s) ease-out infinite;filter:brightness(1.32) drop-shadow(0 0 7px rgba(255,255,255,.38))}
-.rhythm.rest .mrcPulseBody{animation:mrcBodyPulse var(--beat,.86s) ease-out infinite;filter:brightness(1.12)}
-@keyframes mrcPulse{0%{opacity:.08;transform:scaleY(1)}8%{opacity:.31;transform:scaleY(1.018)}18%{opacity:.12;transform:scaleY(1.004)}100%{opacity:.07;transform:scaleY(1)}}
-@keyframes mrcBodyPulse{0%,12%{opacity:.02}28%{opacity:.13}45%{opacity:.04}100%{opacity:.02}}
-
-/* ORGANIC RHYTHM — the MRC DNA is preserved, but each logged day gets its own body. */
-.mrcOrganicSvg{width:100%;height:100%;display:block;overflow:visible}
-.mrcOrganicSvg path{fill:none;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;will-change:opacity,transform,filter}
-.mrcOrganicSvg .bodywave{stroke:rgba(245,240,232,.95);stroke-width:.58;opacity:var(--op,.68);animation:organicBodyBreath 6s cubic-bezier(.45,.05,.55,.95) infinite alternate, organicPropagation var(--beat,.86s) ease-out infinite;animation-delay:var(--slow-delay,0s),var(--pulse-delay,0s)}
-.mrcOrganicSvg .heart{stroke:#fff;stroke-width:1.42;opacity:.98;filter:drop-shadow(0 0 2.4px rgba(255,255,255,.40));animation:organicHeartPulse var(--beat,.86s) cubic-bezier(.42,0,.58,1) infinite}
-@keyframes organicHeartPulse{0%,100%{transform:scaleY(1);opacity:.90;filter:drop-shadow(0 0 2.0px rgba(255,255,255,.32))}8%{transform:translateY(-1px) scaleY(1.035);opacity:1;filter:drop-shadow(0 0 4.8px rgba(255,255,255,.58))}19%{transform:translateY(1px) scaleY(1.008);opacity:.94;filter:drop-shadow(0 0 2.6px rgba(255,255,255,.40))}}
-@keyframes organicBodyBreath{0%{transform:translateY(-.45px) scaleY(.992)}100%{transform:translateY(.45px) scaleY(1.010)}}
-@keyframes organicPropagation{0%,13%,100%{opacity:calc(var(--op,.68)*.86)}24%{opacity:var(--op,.68)}36%{opacity:calc(var(--op,.68)*.92)}}
-.mrcSagePulse{position:absolute;left:-12%;top:49%;width:18%;height:2px;border-radius:999px;opacity:0;background:linear-gradient(90deg,transparent,#8f2f2a 35%,#b9433b 58%,transparent);box-shadow:0 0 7px rgba(143,47,42,.65);pointer-events:none}
-.rhythm.encounter .mrcSagePulse{animation:mrcSageAcross 1.6s ease-out .55s 1 forwards}
-@keyframes mrcSageAcross{0%{left:-12%;opacity:0}8%{opacity:1}70%{opacity:.9}100%{left:100%;opacity:0}}
-
-/* OFFICIAL LIVING TRACE — tactile response without changing stored data. */
-.rhythm.logged{transition:filter .18s ease}
-.rhythm.logged:active .rhythmStage{transform:scaleX(.998) scaleY(1.045);filter:brightness(1.07)}
-.rhythm.logged:active .mrcOrganicSvg .heart{filter:drop-shadow(0 0 5px rgba(255,255,255,.62))}
-
-@media(prefers-reduced-motion:reduce){.rhythmStage,.mrcTrueMaster,.mrcPulseGlow,.mrcPulseBody,.mrcOrganicSvg path,.mrcSagePulse{animation:none!important}}
-
-/* LOG HISTORY — each run keeps a living trace. */
-.logHistoryWave{margin-top:10px;pointer-events:none}
-.logHistoryWave .rhythm{margin-top:0;padding:7px 8px 6px;border-color:rgba(184,176,151,.12);background:#0b0a08}
-.logHistoryWave .rhythmTop,.logHistoryWave .rhythmFoot{display:none}
-.logHistoryWave .rhythmStage{height:58px}
-
-.lifeLine{margin:18px 0 16px;padding:14px 0 10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.lifeLineTitle{font:300 9px var(--serif);letter-spacing:2.6px;color:var(--gold);margin-bottom:12px}
-.lifeLineRow{display:grid;grid-template-columns:12px 74px 1fr;gap:10px;align-items:start;min-height:34px;position:relative}
-.lifeLineRail{position:relative;height:100%}.lifeLineRail:before{content:'';position:absolute;left:5px;top:0;bottom:-2px;width:1px;background:rgba(196,185,154,.18)}
-.lifeLineRow:last-child .lifeLineRail:before{bottom:17px}.lifeLineDot{position:absolute;left:2px;top:5px;width:7px;height:7px;border:1px solid rgba(196,185,154,.35);border-radius:50%;background:var(--bg)}
-.lifeLineRow.on .lifeLineDot{background:var(--white);border-color:var(--white);box-shadow:0 0 8px rgba(245,240,232,.28)}
-.lifeLineKey{font:300 7px var(--serif);letter-spacing:1.8px;color:rgba(196,185,154,.52);padding-top:3px}.lifeLineVal{font:400 9px var(--mono);letter-spacing:.7px;color:rgba(245,240,232,.32);line-height:1.55}.lifeLineRow.on .lifeLineVal{color:var(--white)}
-
-.historyMeta{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);border-left:1px solid var(--border);margin-top:14px}
-.historyMeta>div{padding:10px 12px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
-.historyMeta small{display:block;font:300 7px var(--serif);letter-spacing:1.7px;color:var(--dim);margin-bottom:5px}
-.historyMeta b{font:400 11px var(--mono);color:var(--white)}
-.splitBlock{margin:18px 0 20px;border-top:1px solid var(--border);padding-top:14px}.splitHead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}.splitTitle{font:10px var(--serif);letter-spacing:3px;color:var(--beige)}.splitSub{font:7px var(--mono);letter-spacing:1.1px;color:var(--dim);text-align:right}.splitGrid{display:grid;gap:7px}.splitRow{display:grid;grid-template-columns:46px 1fr 1fr 1fr;gap:8px;align-items:end}.splitRow .splitKm{font:9px var(--mono);color:rgba(196,185,154,.68);padding:9px 0;border-bottom:1px solid rgba(196,185,154,.12)}.splitCell label{display:block;font:7px var(--mono);letter-spacing:1px;color:rgba(139,133,112,.52);margin-bottom:3px}.splitCell input{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(196,185,154,.14);outline:0;color:var(--white);padding:7px 0;font:12px var(--mono)}.splitCell input::placeholder{color:rgba(139,133,112,.24)}.splitNote{margin-top:8px;font:7px var(--mono);letter-spacing:1px;color:rgba(139,133,112,.44);line-height:1.7}.splitBadge{display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid rgba(196,185,154,.16);border-radius:999px;font:7px var(--mono);letter-spacing:.8px;color:rgba(196,185,154,.62)}.splitHistory{margin-top:14px;border-top:1px solid var(--border)}.splitHistoryRow{display:grid;grid-template-columns:44px 1fr 1fr 1fr;gap:8px;padding:8px 0;border-bottom:1px solid rgba(196,185,154,.08);font:9px var(--mono);color:var(--muted)}.splitHistoryRow b{font-weight:400;color:var(--white)}
-@media(max-width:430px){.splitRow{grid-template-columns:40px 1fr 1fr 1fr;gap:6px}.splitCell input{font-size:11px}.splitHistoryRow{grid-template-columns:38px 1fr 1fr 1fr;gap:6px}}
-.stravaDataBand{margin:14px 0 4px;padding:10px 12px;border:1px solid rgba(252,76,2,.28);font:300 8px var(--serif);letter-spacing:2px;color:var(--orange)}
-.historyNote{margin-top:14px;padding:13px;border:1px solid var(--border);font-size:12px;line-height:1.8;color:var(--white)}
-.traceStatus{margin-top:9px;font:7px var(--mono);letter-spacing:1.1px;color:rgba(196,185,154,.48);line-height:1.7}.traceStatus b{font-weight:400;color:rgba(245,240,232,.76)}
-.todayLogHeading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:8px}.todayLogTitle{font:300 9px var(--serif);letter-spacing:2.5px;color:var(--muted)}.todayWeather{font:400 8.5px var(--mono);letter-spacing:1.2px;color:rgba(245,240,232,.72);white-space:nowrap}.todayWeather.pending{color:rgba(139,133,112,.42)}@media(max-width:390px){.todayLogHeading{align-items:flex-start}.todayLogTitle{letter-spacing:2px}.todayWeather{font-size:8px;letter-spacing:.8px}}
-</style>
-
-<!-- MRC v27 TRUE ONE TAP · MEMORY FIRST -->
 </head>
 <body>
 <div id="app"></div>
-
 <script>
-const TARGET_SEC=7140,DIST_KM=21.0975,RACE_PACE=TARGET_SEC/DIST_KM,MAF_HR=133;
-const TZ='Asia/Tokyo';
-const START_KEY='2026-09-01',RACE_KEY='2026-10-25';
-const START=new Date(2026,8,1),RACE_DAY=new Date(2026,9,25);
-const TOTAL_DAYS=55;
-const MOSO_SEED_KEY='mrc_moso_seed_v1';
-const PLANTED_SEEDS_KEY='mrc_planted_seeds_v1';
-const DEFAULT_MOSO_SEED={moso:'ハーフ2時間を切る',why:'もう一度、走れる身体を取り戻す',date:RACE_KEY,target:'1:59:00',destination:'TEGA HALF'};
-function loadMosoSeed(){try{return {...DEFAULT_MOSO_SEED,...(JSON.parse(localStorage.getItem(MOSO_SEED_KEY)||'{}')||{})}}catch{return {...DEFAULT_MOSO_SEED}}}
-function saveMosoSeedData(v){localStorage.setItem(MOSO_SEED_KEY,JSON.stringify(v))}
-function loadPlantedSeeds(){try{return JSON.parse(localStorage.getItem(PLANTED_SEEDS_KEY)||'{}')||{}}catch{return {}}}
-function savePlantedSeeds(v){localStorage.setItem(PLANTED_SEEDS_KEY,JSON.stringify(v||{}))}
-function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c))}
-function seedDays(){const x=loadMosoSeed();return Math.max(0,Math.ceil((keyToUTC(x.date)-keyToUTC(todayStr()))/86400000))}
-function seedDateLabel(k){const [y,m,d]=String(k).split('-').map(Number);return new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,d))).toUpperCase()}
-function seedRelevant(log,seed){
- if(!log||!seed)return false;
- const acts=[log.activityType||''].concat(Array.isArray(log.activities)?log.activities:[]).map(normalizeActivity);
- const text=`${seed.moso||''} ${seed.why||''} ${seed.destination||''} ${seed.target||''}`.toUpperCase();
- if(text.includes('SLEP')||text.includes('英語'))return acts.includes('SLEP');
- if(text.includes('HALF')||text.includes('ハーフ')||text.includes('RUN')||text.includes('走'))return acts.some(a=>['RUN','WALK','STRETCH','MOBILITY','STRENGTH','RECOVERY'].includes(a));
- return acts.includes('MOSO');
-}
-function seedGrowth(seed){
- const realityDay=seed?.date||RACE_KEY,today=todayStr();
- const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
- // A seed grows from the LIFE MEMORIES that actually move that future forward.
- // SLEP begins on its chosen start/reality day (9/18); the half-marathon seed
- // grows from the protocol start (9/1) toward race day (10/25).
- const growthStart=(text.includes('SLEP')||text.includes('英語'))?realityDay:START_KEY;
- const growthEnd=today<realityDay?today:realityDay;
- const memories=(state?.logs||[]).filter(l=>l&&l.date>=growthStart&&l.date<=growthEnd&&seedRelevant(l,seed)).length;
- if(memories>=30)return {stage:'REALITY',cls:'reality',memories};
- if(memories>=7)return {stage:'GROW',cls:'grow',memories};
- if(memories>=1)return {stage:'SPROUT',cls:'sprout',memories};
- return {stage:'SEED',cls:'seed',memories};
-}
-function seedGrowthHTML(seed){const g=seedGrowth(seed);return `<span class="seedGrowth ${g.cls}"><i class="seedGrowthMark"></i>${g.stage}</span>`}
-function seedGrowthPercent(g){
- const n=Number(g?.memories)||0;
- if(n<=0)return 0;
- if(n<7)return Math.round(8+(n/7)*25);
- if(n<30)return Math.round(33+((n-7)/23)*57);
- return 100;
-}
-function seedVisualHTML(seed){
- const g=seedGrowth(seed),n=Number(g.memories)||0;
- const stem=g.stage==='SEED'?3:g.stage==='SPROUT'?10:g.stage==='GROW'?20:25;
- const leafY=Math.max(10,Math.min(22,8+stem*.55));
- return `<span class="seedVisual ${g.cls}" style="--stem:${stem}px;--leafY:${leafY}px" aria-label="${g.stage}, ${n} life memories"><i class="seedVisualRoot"></i><i class="seedVisualStem"></i><i class="seedVisualLeaf l one"></i><i class="seedVisualLeaf r"></i><i class="seedVisualDot"></i></span>`;
-}
-function seedGrowthTrackHTML(seed){
- const g=seedGrowth(seed),pct=seedGrowthPercent(g);
- return `<div class="seedGrowthTrack"><div>${seedVisualHTML(seed)}</div><div class="seedGrowthTrackText"><div class="seedGrowthTrackTop"><span class="seedGrowthTrackStage">${g.stage}</span><span class="seedGrowthTrackCount">${g.memories} LIFE MEMORIES</span></div><div class="seedGrowthRail" style="--growth:${pct}%"><div class="seedGrowthRailFill"></div></div><div class="seedGrowthStops"><span>SEED</span><span>SPROUT</span><span>GROW</span><span>REALITY</span></div></div></div>`;
-}
-
-
-
-const mmss=s=>{const t=Math.round(s),m=Math.floor(t/60),sec=t%60;return `${m}:${String(sec).padStart(2,'0')}`};
-const dKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const tokyoParts=()=>{
- const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
- const v=Object.fromEntries(parts.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
- return {y:+v.year,m:+v.month,d:+v.day};
+const C = {
+  black:"#050505", white:"#FFFFFF", khaki:"#B8B08D", beige:"#E0D7C6",
+  border:"#2A2A2A", dim:"#666666", dimLight:"#101010", muted:"#444444",
+  accent:"#D4AF37", green:"#6F8B74", red:"#8B6F6F"
 };
-const todayStr=()=>{const t=tokyoParts();return `${t.y}-${String(t.m).padStart(2,'0')}-${String(t.d).padStart(2,'0')}`};
-const keyToUTC=k=>{const [y,m,d]=k.split('-').map(Number);return Date.UTC(y,m-1,d)};
-const elapsedDay=()=>Math.max(0,Math.min(TOTAL_DAYS,Math.floor((keyToUTC(todayStr())-keyToUTC(START_KEY))/86400000)+1));
-const daysToReality=()=>Math.max(0,Math.ceil((keyToUTC(RACE_KEY)-keyToUTC(todayStr()))/86400000));
-const todayMD=()=>{const t=tokyoParts();return `${t.m}/${t.d}`};
-const w2date=w=>{const d=new Date(START);d.setDate(d.getDate()+(w-1)*7);return d};
-const w2key=w=>`week-${w}`;
-const wDates=w=>{const s=w2date(w),e=new Date(s);e.setDate(e.getDate()+6);return `${s.getMonth()+1}/${s.getDate()} - ${e.getMonth()+1}/${e.getDate()}`};
-const curWeek=()=>{const n=elapsedDay();return n<=0?1:Math.min(Math.floor((n-1)/7)+1,8)};
-const dayIdx=()=>{const t=tokyoParts(),d=new Date(Date.UTC(t.y,t.m-1,t.d)).getUTCDay();return d===0?6:d-1};
-const isValidPace=p=>/^\d{1,2}:\d{2}$/.test(p);
-const timeDigitsToSec=v=>{const d=String(v||'').replace(/\D/g,'');if(!d)return 0;const z=d.padStart(5,'0').slice(-5),h=Number(z.slice(0,1)),m=Number(z.slice(1,3)),sec=Number(z.slice(3,5));return (m<60&&sec<60)?h*3600+m*60+sec:0};
-const secToHMS=sec=>{sec=Math.max(0,Math.round(Number(sec)||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`};
-const secToDigits=sec=>{sec=Math.max(0,Math.round(Number(sec)||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return `${h}${String(m).padStart(2,'0')}${String(ss).padStart(2,'0')}`};
-const calcPace=(dist,timeSec)=>{dist=Number(dist);timeSec=Number(timeSec);if(!(dist>0&&timeSec>0))return '';const ps=Math.round(timeSec/dist);return `${Math.floor(ps/60)}:${String(ps%60).padStart(2,'0')}`};
-function updateAutoPace(){const d=document.getElementById('ld'),t=document.getElementById('lt'),p=document.getElementById('paceAutoValue');if(!d||!t||!p)return;const sec=timeDigitsToSec(t.value),pace=calcPace(d.value,sec);p.textContent=pace?pace+'/km':'DISTANCE + TIME';p.classList.toggle('empty',!pace);const out=document.getElementById('timeFormatted');if(out)out.textContent=sec?secToHMS(sec):'H:MM:SS';}
-const splitPaceToSec=v=>{const q=String(v||'').trim();if(/^\d{3,4}$/.test(q)){const z=q.padStart(4,'0'),m=Number(z.slice(0,-2)),ss=Number(z.slice(-2));return ss<60?m*60+ss:0}if(/^\d{1,2}:\d{2}$/.test(q))return paceToSec(q);return 0};
-const splitPaceDisplay=v=>{const sec=splitPaceToSec(v);return sec?`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`:''};
-function splitRowCount(dist){const d=Number(dist||0);return d>0?Math.max(1,Math.min(50,Math.ceil(d))):0}
-function collectSplitDraft(){const rows=[...document.querySelectorAll('.splitRow[data-split-index]')];return rows.map((r,i)=>({km:i+1,pace:(r.querySelector('.spPace')?.value||'').trim(),hr:(r.querySelector('.spHr')?.value||'').trim(),elevation:(r.querySelector('.spElev')?.value||'').trim()}))}
-function renderSplitInputs(existing){const host=document.getElementById('splitRows');const d=document.getElementById('ld');if(!host||!d)return;const n=splitRowCount(d.value);const old=existing||collectSplitDraft();host.innerHTML=Array.from({length:n},(_,i)=>{const x=old[i]||{};const last=(i===n-1&&Number(d.value)%1>0);const label=last?`${Number(d.value).toFixed(2)} END`:`${i+1}K`;return `<div class="splitRow" data-split-index="${i}"><div class="splitKm">${label}</div><div class="splitCell"><label>PACE</label><input class="spPace" inputmode="numeric" value="${x.pace||''}" placeholder="0643"></div><div class="splitCell"><label>HR</label><input class="spHr" inputmode="numeric" type="number" min="40" max="220" value="${x.hr||''}" placeholder="133"></div><div class="splitCell"><label>+M</label><input class="spElev" inputmode="numeric" type="number" step="1" value="${x.elevation||''}" placeholder="8"></div></div>`}).join('');}
-function updateAutoPaceAndSplits(){updateAutoPace();renderSplitInputs()}
-function normalizedSplits(rows){return (rows||[]).map((x,i)=>({km:i+1,pace:splitPaceDisplay(x.pace)||String(x.pace||''),hr:String(x.hr||''),elevation:String(x.elevation||'')})).filter(x=>splitPaceToSec(x.pace)||Number(x.hr)>0||Number(x.elevation)!==0)}
-const isValidDist=d=>Number(d)>0;
-const isValidStravaUrl=url=>{if(!url)return false;try{return new URL(url).hostname.includes('strava.com')}catch{return false}};
-const copyText=async t=>{try{await navigator.clipboard.writeText(t)}catch{}};
-const vibe=()=>{try{navigator.vibrate&&navigator.vibrate(40)}catch{}};
 
-const clamp=(v,min,max)=>Math.max(min,Math.min(max,Number(v)||0));
-const paceToSec=p=>{if(!isValidPace(p))return 390;const [m,ss]=p.split(':').map(Number);return m*60+ss};
-const secToPace=sec=>{sec=Math.max(0,Math.round(Number(sec)||0));return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`};
-const latestTodayLog=()=>{const a=state.logs.filter(l=>l.date===todayStr());return a.length?a[a.length-1]:null};
-const sageForLog=l=>SAGES[Math.max(0,Math.min(SAGES.length-1,Number(l?.sageIndex)||0))];
-function seededNoise(seed,i){const x=Math.sin((seed+1)*12.9898+i*78.233)*43758.5453;return (x-Math.floor(x))*2-1}
-function rhythmMetrics(log){
- if(!log)return {amp:4.1,freq:34,flow:.94,distort:.12,depth:12,hr:null,seed:17};
- const rpe=clamp(log.rpe||4,1,10),fat=clamp(log.fatigue||2,1,5),mood=clamp(log.mood||3,1,5),pain=clamp(log.pain||0,0,10);
- const dist=clamp(log.distance||3,.1,50),mins=clamp(log.duration||((dist*paceToSec(log.pace))/60),1,400),cad=clamp(log.cadence||165,120,210),hr=clamp(log.avgHr||MAF_HR,70,210),pace=paceToSec(log.pace);
- return {
-  amp:5.4+rpe*1.12+Math.min(4.8,dist*.22),
-  freq:Math.max(18,Math.min(39,31+(pace-360)*.032-(cad-165)*.045)),
-  flow:Math.max(.35,1-(Math.abs(hr-MAF_HR)/120+fat*.045)),
-  distort:(pain*.28+Math.abs(mood-3)*.55+fat*.18),
-  depth:Math.max(10,Math.min(14,10+Math.round((dist/8+mins/75)*2))),
-  hr,seed:Math.round(dist*17+mins*3+hr*5+rpe*13+pain*19+mood*23)
- };
-}
-function buildHybridTrace(log,base){
- const src=(Array.isArray(log?.trace)&&log.trace.length?log.trace:(Array.isArray(log?.splits)?log.splits:[]));
- if(!src.length)return [];
- const pts=src.map((sp,i)=>{const ps=splitPaceToSec(sp.pace),hr=Number(sp.hr||0),ev=Number(sp.elevation??sp.elev??0),cad=Number(sp.cadence||0);return {paceSec:ps||base.paceSec,hr:hr||base.hr,elev:ev,cad:cad||base.cad,index:i}}).filter(x=>x.paceSec||x.hr||x.elev||x.cad);
- if(!pts.length)return [];
- // C3: smooth macro flow + deterministic micro response. No random geometry.
- const out=[],N=Math.max(72,pts.length*28);
- const smooth=(a,b,u)=>{u=u*u*(3-2*u);return a+(b-a)*u};
- for(let j=0;j<N;j++){
-   const t=j/(N-1),x=t*Math.max(1,pts.length-1),i=Math.min(pts.length-1,Math.floor(x)),k=Math.min(pts.length-1,i+1),u=x-i;
-   const a=pts[i],b=pts[k];
-   const paceSec=smooth(a.paceSec,b.paceSec,u),hr=smooth(a.hr,b.hr,u),elev=smooth(a.elev,b.elev,u),cad=smooth(a.cad,b.cad,u);
-   const pLoad=paceSec?clamp((760-paceSec)/470,0,1):.2,hLoad=hr?clamp((hr-75)/95,0,1):.2,eLoad=clamp(Math.max(0,elev)/40,0,1),down=clamp(Math.max(0,-elev)/40,0,1),cLoad=cad?clamp((cad-120)/80,0,1):.45;
-   const micro=.035*Math.sin((17+pts.length*2.7)*Math.PI*2*t)+.018*Math.sin(43*Math.PI*t+.7);
-   const intensity=clamp(.10+.44*pLoad+.27*hLoad+.18*eLoad+.08*cLoad-.04*down+micro,.06,1.35);
-   out.push({t,paceSec,hr,elev,cad,intensity,paceLoad:pLoad,hrLoad:hLoad,elevLoad:eLoad,cadenceLoad:cLoad});
- }
- return out;
-}
-function normalizeActivity(v){return String(v||'').trim().toUpperCase().replaceAll('Ō','O');}
-function displayActivity(v){return normalizeActivity(v)==='MOSO'?'MŌSŌ':String(v||'').trim().toUpperCase();}
+const PROTOCOLS = {
+ A:{title:"DISCIPLINE / MINIMAL / URBAN",quote:"Discipline reveals freedom."},
+ B:{title:"MOUNTAIN / ENDURANCE / NATURE",quote:"Run until silence appears."},
+ C:{title:"ZEN / RECOVERY / LONG LIFE",quote:"Recovery is also training."}
+};
 
-const WEATHER_CACHE_KEY='mrc_weather_gps_v1';
-let weatherBusy=false;
-function weatherIcon(code){
- code=Number(code);
- if(code===0)return '☀︎';
- if([1,2].includes(code))return '◐';
- if(code===3)return '☁︎';
- if([45,48].includes(code))return '≋';
- if([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code))return '☂︎';
- if([71,73,75,77,85,86].includes(code))return '❄︎';
- if([95,96,99].includes(code))return '⚡︎';
- return '·';
-}
-function loadWeatherCache(){try{return JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'{}')||{}}catch{return {}}}
-function weatherBadge(){
- const c=loadWeatherCache();
- if(c.date===todayStr()&&Number.isFinite(Number(c.tmax))&&Number.isFinite(Number(c.tmin)))return `<span class="todayWeather">GPS ${weatherIcon(c.code)} ${Math.round(Number(c.tmax))}° / ${Math.round(Number(c.tmin))}°</span>`;
- return `<span class="todayWeather pending">GPS · WEATHER</span>`;
-}
-function logWeatherBadge(log){
- const w=log?.weather;
- if(w&&Number.isFinite(Number(w.tmax))&&Number.isFinite(Number(w.tmin)))return `<span class="logWeather">${weatherIcon(w.code)} ${Math.round(Number(w.tmax))}° / ${Math.round(Number(w.tmin))}°</span>`;
- return '';
-}
-let historyWeatherBusy=false;
-async function fetchWeatherForDate(lat,lon,date){
- const isToday=date===todayStr();
- const base=isToday?'https://api.open-meteo.com/v1/forecast':'https://archive-api.open-meteo.com/v1/archive';
- const url=`${base}?latitude=${Number(lat).toFixed(4)}&longitude=${Number(lon).toFixed(4)}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&start_date=${date}&end_date=${date}`;
- const r=await fetch(url,{cache:'no-store'}); if(!r.ok)throw new Error('WEATHER');
- const d=(await r.json()).daily||{};
- const out={code:Number(d.weather_code?.[0]),tmax:Number(d.temperature_2m_max?.[0]),tmin:Number(d.temperature_2m_min?.[0]),lat:Number(lat),lon:Number(lon)};
- return Number.isFinite(out.tmax)&&Number.isFinite(out.tmin)?out:null;
-}
-function ensureHistoryWeather(){
- if(historyWeatherBusy||!state?.logs?.some(l=>!l.weather))return;
- const run=async(lat,lon)=>{historyWeatherBusy=true;let changed=false;
-  for(const l of state.logs){if(l.weather)continue;try{const w=await fetchWeatherForDate(lat,lon,l.date);if(w){l.weather=w;changed=true}}catch(e){}}
-  if(changed)persistLogs(state.logs);historyWeatherBusy=false;if(changed)render();
- };
- const c=loadWeatherCache();
- if(Number.isFinite(Number(c.lat))&&Number.isFinite(Number(c.lon)))run(c.lat,c.lon);
- else if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>run(p.coords.latitude,p.coords.longitude),()=>{}, {enableHighAccuracy:false,timeout:7000,maximumAge:3*60*60*1000});
-}
-function ensureTodayWeather(){
- if(weatherBusy||!navigator.geolocation)return;
- const c=loadWeatherCache(), fresh=c.date===todayStr()&&Date.now()-Number(c.updatedAt||0)<3*60*60*1000;
- if(fresh)return;
- weatherBusy=true;
- navigator.geolocation.getCurrentPosition(async pos=>{
-  try{
-   const lat=Number(pos.coords.latitude).toFixed(4),lon=Number(pos.coords.longitude).toFixed(4),date=todayStr();
-   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&start_date=${date}&end_date=${date}`;
-   const r=await fetch(url,{cache:'no-store'}); if(!r.ok)throw new Error('WEATHER');
-   const j=await r.json(),d=j.daily||{};
-   const out={date,code:Number(d.weather_code?.[0]),tmax:Number(d.temperature_2m_max?.[0]),tmin:Number(d.temperature_2m_min?.[0]),lat:Number(lat),lon:Number(lon),updatedAt:Date.now()};
-   if(Number.isFinite(out.tmax)&&Number.isFinite(out.tmin)){localStorage.setItem(WEATHER_CACHE_KEY,JSON.stringify(out));const tl=state.logs.find(l=>l.date===date);if(tl&&!tl.weather){tl.weather={code:out.code,tmax:out.tmax,tmin:out.tmin,lat:out.lat,lon:out.lon};persistLogs(state.logs)}weatherBusy=false;render();return;}
-  }catch(e){} weatherBusy=false;
- },()=>{weatherBusy=false},{enableHighAccuracy:false,timeout:7000,maximumAge:3*60*60*1000});
-}
-function todayMissionPlan(){
- const di=dayIdx(); let label=(SCH[state.type]&&SCH[state.type][di]?SCH[state.type][di][2]:'');
- if(todayStr()==='2026-09-01')label='RESTART CHECK-IN';
- const p={move:[],mind:[],recovery:[]};
- if(label.includes('RESTART'))p.move=['WALK','MOBILITY'];
- else if(label.includes('HIIT'))p.move=['HIIT','STRETCH'];
- else if(label.includes('RUN'))p.move=['RUN'];
- else if(label.includes('RECOVERY')){p.move=['WALK','STRETCH'];p.recovery=['RECOVERY'];}
- else if(label.includes('RESET')){p.move=['WALK'];p.mind=['MEDITATION'];}
- else if(label.includes('BUILD'))p.move=['STRENGTH','STRETCH'];
- else if(label.includes('QUIET')){p.move=['STRETCH'];p.recovery=['RECOVERY'];}
- return p;
-}
-function intentionForToday(){
- const saved=(state.intentions||{})[todayStr()];
- return saved||todayMissionPlan();
+function genWeeks(){
+  const phases=[
+    {name:"BASE BUILD",desc:"基礎構築。脂肪燃焼と持久力。"},
+    {name:"STRENGTH & SPEED",desc:"スピード持久力向上。"},
+    {name:"SPECIFIC PHASE",desc:"レース適応。"},
+    {name:"TAPER & PEAK",desc:"疲労抜きと調整。"}
+  ];
+  const weeks=[];
+  for(let i=1;i<=28;i++){
+    let load=0;
+    if(i<=8) load=40+i*5;
+    else if(i<=16) load=70+(i-8)*4;
+    else if(i<=24) load=95-(i-16)*2;
+    else load=60-(i-24)*10;
+    const phaseIndex=i<=8?0:i<=16?1:i<=24?2:3;
+    const recovery=i%4===0;
+    weeks.push({
+      week:i, phase:phases[phaseIndex].name, desc:phases[phaseIndex].desc, load,
+      tasks:recovery?["RECOVERY","MOBILITY","LIGHT JOG"]:["RUN","CALISTHENICS","JOURNAL"]
+    });
+  }
+  return weeks;
 }
 
-function allSeeds(){
- const primary=loadMosoSeed(),planted=loadPlantedSeeds();
- return [{seed:primary,primary:true}].concat(Object.entries(planted).filter(([d])=>d!==primary.date).map(([d,v])=>({seed:{...DEFAULT_MOSO_SEED,date:d,...v},primary:false})));
-}
-function seedMatchesActivities(seed,activities){
- const acts=(activities||[]).map(normalizeActivity);
- const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
- if(text.includes('SLEP')||text.includes('英語'))return acts.includes('SLEP');
- if(text.includes('HALF')||text.includes('ハーフ')||text.includes('RUN')||text.includes('走'))return acts.some(a=>['RUN','WALK','STRETCH','MOBILITY','STRENGTH','RECOVERY'].includes(a));
- return acts.includes('MOSO');
-}
-function intentionSeedLinks(intent){
- const acts=[...(intent?.move||[]),...(intent?.mind||[]),...(intent?.recovery||[])];
- return allSeeds().filter(({seed})=>seedMatchesActivities(seed,acts));
-}
-function intentionGrowsHTML(intent,compact=false,label='THIS INTENTION GROWS'){
- const links=intentionSeedLinks(intent);
- if(!links.length)return '';
- const rows=links.map(({seed})=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:${compact?'7px':'9px'} 0;border-top:1px solid rgba(196,185,154,.09)"><span style="font-size:${compact?'12px':'13px'};color:var(--white);line-height:1.45">${esc(seed.moso||'UNTITLED SEED')}</span><span class="phase" style="white-space:nowrap">GROWS →</span></div>`).join('');
- return `<div style="margin-top:${compact?'10px':'14px'};padding-top:2px"><div class="wmeta" style="margin-bottom:3px">${label}</div>${rows}</div>`;
+function getCurrentWeek(){
+  const start=localStorage.getItem("mrc_start");
+  if(!start) return 1;
+  const diff=Math.floor((Date.now()-new Date(start).getTime())/(1000*60*60*24*7))+1;
+  return Math.min(Math.max(diff,1),28);
 }
 
-function fullLivingStack(log){
- const acts=[String(log?.activityType||'')].concat(Array.isArray(log?.activities)?log.activities:[]).map(normalizeActivity);
- const has=(...xs)=>xs.some(x=>acts.includes(x));
- const sleepRaw=String(log?.sleep||'').replace(/\D/g,'');
- let sleepH=0;
- if(sleepRaw){
-   const n=Number(sleepRaw); const hh=sleepRaw.length<=2?n:Math.floor(n/100); const mm=sleepRaw.length<=2?0:n%100;
-   sleepH=clamp(hh+mm/60,0,14);
- }
- const weight=Number(log?.weight||0);
- const body=clamp((sleepH?(.42+Math.min(.58,sleepH/8*.58)):.52)+(weight? .06:0),.35,1.06);
- const moveCount=['RUN','WALK','CYCLING','SWIM','HIKE','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY'].filter(x=>acts.includes(x)).length;
- const mindCount=['MEDITATION','BREATHWORK','MOSO','SLEP'].filter(x=>acts.includes(x)).length;
- const recoveryCount=['RECOVERY','REST'].filter(x=>acts.includes(x)).length;
- return {body,move:clamp(moveCount/3,0,1),mind:clamp(mindCount/2,0,1),recovery:clamp(recoveryCount,0,1),sleepH,weight,hasMind:mindCount>0,hasRecovery:recoveryCount>0};
+const quotes=[
+ "Pain is inevitable. Suffering is optional.",
+ "Stay hard.",
+ "Discipline reveals freedom.",
+ "Run until silence appears.",
+ "Recovery is also training.",
+ "Chaos and balance."
+];
+
+let state={
+ protocol:localStorage.getItem("mrc_protocol")||null,
+ progress:JSON.parse(localStorage.getItem("mrc_progress")||"{}"),
+ logs:JSON.parse(localStorage.getItem("mrc_logs")||"[]"),
+ tab:"weeks",
+ advice:quotes[Math.floor(Math.random()*quotes.length)]
+};
+
+function saveProgress(){localStorage.setItem("mrc_progress",JSON.stringify(state.progress))}
+function saveLogs(){localStorage.setItem("mrc_logs",JSON.stringify(state.logs))}
+
+function selectProtocol(id){
+ state.protocol=id;
+ localStorage.setItem("mrc_protocol",id);
+ localStorage.setItem("mrc_start",new Date().toISOString());
+ render();
 }
-function organicWaveModel(log){
- const paceSec=paceToSec(log?.pace);
- const dist=clamp(Number(log?.distance||0),0,42.2);
- const mins=clamp(Number(log?.duration||((dist*paceSec)/60)||0),0,300);
- const rpe=clamp(Number(log?.rpe||4),1,10),fat=clamp(Number(log?.fatigue||2),1,5),mood=clamp(Number(log?.mood||3),1,5),pain=clamp(Number(log?.pain||0),0,10);
- const rawHr=Number(log?.avgHr ?? log?.avgHR ?? log?.averageHr ?? 0);
- const maxHr=Number(log?.maxHr||0),cad=Number(log?.cadence||0),elev=Number(log?.elevationGain||0);
- const activity=(log?.activityType||'RUN').toUpperCase();
- const paceLoad=paceSec>0?clamp((760-paceSec)/470,0,1):.2;
- const distanceLoad=clamp(dist/10,0,1),durationLoad=clamp(mins/75,0,1);
- const hrLoad=rawHr>0?clamp((rawHr-75)/95,0,1):(.18+.44*paceLoad);
- const maxHrLoad=maxHr>0?clamp((maxHr-(rawHr||100))/65,0,1):.25;
- const cadenceLoad=cad>0?clamp((cad-120)/80,0,1):.45;
- const elevationLoad=clamp(elev/300,0,1);
- const typeFactor=({REST:.22,MEDITATION:.28,MOSO:.26,SLEP:.34,BREATHWORK:.30,STRETCH:.34,MOBILITY:.38,YOGA:.44,PILATES:.56,WALK:.58,RECOVERY:.40,STRENGTH:.78,HIIT:1.08,CYCLING:.82,SWIM:.86,HIKE:.72,RUN:1}[activity]??.62);
- const energy=clamp((.06+.36*paceLoad+.15*distanceLoad+.08*durationLoad+.13*hrLoad+.07*maxHrLoad+.07*cadenceLoad+.08*elevationLoad)*typeFactor,.06,1);
- const seedText=[log?.date||'',activity,dist.toFixed(2),paceSec,Math.round(mins*10),rawHr,maxHr,cad,elev,rpe,fat,mood,pain,log?.feeling||''].join('|');
- let h=2166136261;
- for(let i=0;i<seedText.length;i++){h^=seedText.charCodeAt(i);h=Math.imul(h,16777619)}
- const rnd=(k)=>{let x=(h+Math.imul(k+1,2654435761))|0;x^=x<<13;x^=x>>>17;x^=x<<5;return ((x>>>0)%10000)/10000};
- const splitProfile=(Array.isArray(log?.splits)?log.splits:[]).map((sp,i)=>{
-   const ps=splitPaceToSec(sp.pace),shr=Number(sp.hr||0),sev=Number(sp.elevation||0);
-   if(!(ps>0||shr>0||sev!==0))return null;
-   const pLoad=ps>0?clamp((760-ps)/470,0,1):paceLoad;
-   const hLoad=shr>0?clamp((shr-75)/95,0,1):hrLoad;
-   const eLoad=clamp(Math.max(0,sev)/40,0,1);
-   const downhill=clamp(Math.max(0,-sev)/40,0,1);
-   const intensity=clamp(.12+.48*pLoad+.27*hLoad+.22*eLoad-.05*downhill,.08,1.25);
-   return {paceSec:ps||paceSec,hr:shr||rawHr||0,elev:sev,paceLoad:pLoad,hrLoad:hLoad,elevLoad:eLoad,intensity,index:i};
- }).filter(Boolean);
- // Energy events emerge from the day. Their count is not fixed and is never forced to two.
- const eventCount=Math.max(1,Math.min(6,1+Math.floor(energy*3.2 + elevationLoad*1.15 + cadenceLoad*.55 + rnd(2)*1.15)));
- const peaks=[];
- for(let i=0;i<eventCount;i++){
-   const base=(i+1)/(eventCount+1);
-   const jitter=(rnd(10+i)-.5)*Math.min(.16,.28/(eventCount+1));
-   const pos=clamp(base+jitter,.10,.90);
-   const amp=(.46+.60*rnd(30+i))*(.48+.76*energy+.18*elevationLoad)*(i===Math.floor(eventCount*.58)?1.08:1);
-   const width=clamp(.205-.082*energy-.035*cadenceLoad + (rnd(50+i)-.5)*.060,.055,.215);
-   const skew=(rnd(70+i)-.5)*.9;
-   peaks.push({pos,amp,width,skew});
- }
- const hybridTrace=buildHybridTrace(log,{paceSec,hr:rawHr||MAF_HR,cad:cad||165});
- const lifeStack=fullLivingStack(log);
- return {energy,peaks,seed:h>>>0,rpe,fat,mood,pain,paceLoad,elevationLoad,cadenceLoad,maxHrLoad,activity,splitProfile,hybridTrace,lifeStack};
+function resetProtocol(){
+ state.protocol=null;
+ localStorage.removeItem("mrc_protocol");
+ localStorage.removeItem("mrc_start");
+ render();
 }
-function organicEnvelope(t,m){
- if(m.hybridTrace&&m.hybridTrace.length){
-   const a=m.hybridTrace,n=a.length,x=clamp(t,0,1)*(n-1),i=Math.floor(x),k=Math.min(n-1,i+1),u=x-i;
-   const local=a[i].intensity+(a[k].intensity-a[i].intensity)*u;
-   const edge=Math.pow(Math.sin(Math.PI*clamp(t,.001,.999)),.36);
-   const ls=m.lifeStack||{body:.5,move:0,mind:0,recovery:0}; const lifeGain=.90+.10*ls.body+.12*ls.move; const mindBreath=ls.mind*.055*Math.sin(Math.PI*2*t*1.15); const recoveryCalm=1-ls.recovery*.08;
-   return clamp(edge*(.12+1.18*local)*lifeGain*recoveryCalm + mindBreath*edge,0,1.58);
- }
- if(m.splitProfile&&m.splitProfile.length){
-   const a=m.splitProfile,n=a.length;
-   const x=clamp(t,0,1)*n-.5;
-   const i0=Math.max(0,Math.min(n-1,Math.floor(x))),i1=Math.max(0,Math.min(n-1,i0+1));
-   const f=clamp(x-i0,0,1),ease=.5-.5*Math.cos(Math.PI*f);
-   const v0=a[i0].intensity,v1=a[i1].intensity;
-   const local=v0+(v1-v0)*ease;
-   const elev0=a[i0].elevLoad||0,elev1=a[i1].elevLoad||0,elev=elev0+(elev1-elev0)*ease;
-   const edge=Math.pow(Math.sin(Math.PI*clamp(t,.001,.999)),.42);
-   const sectionPulse=.05*Math.sin((n*1.35+1.2)*Math.PI*2*t+(m.seed%31)/9);
-   return clamp(edge*(.14+1.12*local+.18*elev+sectionPulse),0,1.55);
- }
- let e=0;
- for(const p of m.peaks){
-   const dx=t-p.pos;
-   const width=dx<0?p.width*(1-.18*p.skew):p.width*(1+.18*p.skew);
-   e += p.amp*Math.exp(-Math.pow(dx/width,2));
- }
- e += .045*(1+m.energy)*Math.max(0,Math.sin((3.2+m.peaks.length*.72)*Math.PI*t + (m.seed%29)/11));
- const ls=m.lifeStack||{body:.5,move:0,mind:0,recovery:0}; const lifeGain=.90+.10*ls.body+.12*ls.move; const mindBreath=ls.mind*.055*Math.sin(Math.PI*2*t*1.15); const recoveryCalm=1-ls.recovery*.08;
- return clamp(e*lifeGain*recoveryCalm + mindBreath*Math.sin(Math.PI*t),0,1.55);
+function toggleProgress(key){
+ if(state.progress[key]) delete state.progress[key]; else state.progress[key]=true;
+ saveProgress(); render();
 }
-function organicHeartPath(log){
- const W=360,mid=58,m=organicWaveModel(log);let d='';
- const hr=Number(log?.avgHr||log?.avgHR||log?.averageHr||0); const hrLife=hr?clamp(.82+(hr-100)*.0105,.82,1.30):1;
- const c3Boost=hrLife;
- const phase=(m.seed%97)/97*Math.PI*2;
- for(let x=0;x<=W;x+=2){
-   const t=x/W,env=organicEnvelope(t,m);
-   const drift=(1.2+2.4*m.energy)*Math.sin((1.10+m.peaks.length*.12)*Math.PI*2*t+phase*.17);
-   const traceP=m.hybridTrace&&m.hybridTrace.length?m.hybridTrace[Math.min(m.hybridTrace.length-1,Math.floor(t*(m.hybridTrace.length-1)))]:null; const splitP=traceP||(m.splitProfile&&m.splitProfile.length?m.splitProfile[Math.min(m.splitProfile.length-1,Math.floor(t*m.splitProfile.length))]:null); const localFreq=splitP?clamp(13.2-(splitP.paceSec-300)/72,6.2,15.2):(8.5+3*m.energy); const local=(.34+.52*m.energy)*Math.sin(localFreq*Math.PI*2*t+phase) + .16*Math.sin(31*Math.PI*t+phase*.4);
-   const bias=(m.mood-3)*.16*Math.sin(Math.PI*t) - m.pain*.025*env;
-   const ls=m.lifeStack||{mind:0,recovery:0}; const livingMind=ls.mind*(.34*Math.sin(Math.PI*2*t*2.15+phase*.3)); const livingRecovery=-ls.recovery*(.18*Math.sin(Math.PI*2*t*.72));
-   const y=mid + (drift*(.28+.72*env) + local + bias + livingMind + livingRecovery)*c3Boost;
-   d+=(x?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
- }
- return d;
+function addLog(){
+ state.logs.unshift({date:new Date().toLocaleDateString(),text:"Morning Session: Completed."});
+ saveLogs(); render();
 }
-function organicBodyPath(log,layer){
- const W=360,mid=58,m=organicWaveModel(log),N=14,half=N/2;
- const hr=Number(log?.avgHr||log?.avgHR||log?.averageHr||0); const hrLife=hr?clamp(.82+(hr-100)*.0105,.82,1.30):1;
- const c3Boost=hrLife;
- const side=layer<half?-1:1;
- const rank=layer<half?half-layer:layer-half+1;
- const level=rank/half;let d='';
- const phase=(m.seed%97)/97*Math.PI*2;
- for(let x=0;x<=W;x+=2){
-   const t=x/W,env=organicEnvelope(t,m);
-   const heartDrift=(1.2+2.4*m.energy)*Math.sin((1.10+m.peaks.length*.12)*Math.PI*2*t+phase*.17);
-   const traceP=m.hybridTrace&&m.hybridTrace.length?m.hybridTrace[Math.min(m.hybridTrace.length-1,Math.floor(t*(m.hybridTrace.length-1)))]:null; const splitP=traceP||(m.splitProfile&&m.splitProfile.length?m.splitProfile[Math.min(m.splitProfile.length-1,Math.floor(t*m.splitProfile.length))]:null); const localFreq=splitP?clamp(13.2-(splitP.paceSec-300)/72,6.2,15.2):(8.5+3*m.energy); const heartLocal=(.34+.52*m.energy)*Math.sin(localFreq*Math.PI*2*t+phase) + .16*Math.sin(31*Math.PI*t+phase*.4);
-   const heartY=mid + heartDrift*(.28+.72*env) + heartLocal + (m.mood-3)*.16*Math.sin(Math.PI*t) - m.pain*.025*env;
-   const separation=(.9 + (7.0+22*m.energy)*level*Math.pow(env,.84))*c3Boost;
-   const asym=side*(.45+1.05*level)*Math.sin((2.1+m.peaks.length*.23)*Math.PI*2*t + phase*.31 + rank*.18)*Math.pow(env,.72)*c3Boost;
-   const texture=(1-level)*(.34*Math.sin(19*Math.PI*t+rank*.22+phase)+.12*Math.sin(37*Math.PI*t+rank*.33));
-   const y=heartY + side*separation + asym + texture;
-   d+=(x?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
- }
- return d;
-}
-function organicSvg(log){
- const body=Array.from({length:14},(_,i)=>{
-   const inner=i<7?7-i:i-6;
-   const op=(.30 + (1-inner/7)*.52).toFixed(2);
-   const pulseDelay=(inner*.020).toFixed(3)+'s';
-   const slowDelay=(-(i*.17)).toFixed(2)+'s';
-   return `<path class="bodywave" style="--op:${op};--pulse-delay:${pulseDelay};--slow-delay:${slowDelay}" d="${organicBodyPath(log,i)}"/>`;
- }).join('');
- return `<svg class="mrcOrganicSvg" viewBox="0 0 360 116" preserveAspectRatio="none" aria-hidden="true">${body}<path class="heart" d="${organicHeartPath(log)}"/></svg>`;
-}
-function livingRhythm(log){
- const logged=!!log;
- const BASE_HR=70;
- const rawHr=log?Number(log.avgHr ?? log.avgHR ?? log.averageHr ?? 0):0;
- const measuredHr=rawHr>0?Math.round(rawHr):null;
- let rhythmHr=BASE_HR,rhythmSource='base';
- if(logged){
-   if(measuredHr){rhythmHr=measuredHr;rhythmSource='real'}
-   else{
-     const paceSec=paceToSec(log.pace);
-     const paceIntensity=paceSec>0?clamp(338/paceSec,.65,1.10):.82;
-     const durationMin=clamp(Number(log.duration||0),0,180);
-     const durationLift=Math.min(.10,durationMin/900);
-     const rpeRaw=Number(log.rpe||0);
-     const rpeLift=rpeRaw>0?clamp((rpeRaw-4)*.025,-.075,.15):0;
-     const runCoefficient=clamp(1.35+.35*paceIntensity+durationLift+rpeLift,1.45,1.90);
-     rhythmHr=Math.round(BASE_HR*runCoefficient);rhythmSource='mrc';
-   }
- }
- const encounter=!!(log&&log.sageEncounter);
- const mood=logged?clamp(Number(log.mood||3),1,5):3;
- const pain=logged?clamp(Number(log.pain||0),0,10):0;
- const bright=(1+Math.min(.05,Math.max(-.03,(mood-3)*.012-pain*.002))).toFixed(3);
- const beat=Math.max(.70,Math.min(1.20,120/rhythmHr)).toFixed(2)+'s';
- const cls=`rhythm ${logged?'logged':'rest'} ${encounter?'encounter':''}`;
- const action=encounter?' onclick="openEncounter()" role="button" tabindex="0" aria-label="Sage encounter"':'';
- const bpm=rhythmSource==='real'?`♥ ${rhythmHr} BPM`:rhythmSource==='mrc'?`♥ ${rhythmHr} BPM · MRC`:`♥ ${rhythmHr} BPM · BASE`;
- const visual=logged?organicSvg(log):`<img class="mrcTrueMaster" src="mrc_living_rhythm_master.png" alt="" aria-hidden="true"><span class="mrcPulseGlow" aria-hidden="true"></span><span class="mrcPulseBody" aria-hidden="true"></span>`;
- return `<div class="${cls}" style="--master-bright:${bright};--beat:${beat}"${action}>
-   <div class="rhythmTop"><span class="label" style="margin:0">LIVING RHYTHM</span><span class="rhythmBpm">${bpm}</span></div>
-   <div class="rhythmStage">${visual}${encounter?'<span class="mrcSagePulse" aria-hidden="true"></span>':''}</div>
-   <div class="rhythmFoot"><span class="rhythmMotto">FEWER, DEEPER, PERSISTENT.</span></div>
+function setTab(t){state.tab=t;if(t==="logs")state.advice=quotes[Math.floor(Math.random()*quotes.length)];render()}
+
+function progressCircle(pct){
+ const r=45, c=2*Math.PI*r, dash=(pct/100)*c;
+ return `<div class="progress-wrap">
+ <svg width="70" height="70" viewBox="0 0 100 100">
+   <circle cx="50" cy="50" r="45" fill="none" stroke="${C.dimLight}" stroke-width="2"/>
+   <circle cx="50" cy="50" r="45" fill="none" stroke="${C.khaki}" stroke-width="2"
+     stroke-dasharray="${dash} ${c}" transform="rotate(-90 50 50)"/>
+ </svg>
+ <div class="progress-text">${Math.round(pct)}%</div>
  </div>`;
 }
 
-const PHASES=[
-  ['RESTART',1,1],['BASE BUILD',2,3],['STRENGTH & SPEED',4,4],
-  ['SUB-2 SPECIFIC',5,6],['PEAK & TAPER',7,7],['RACE WEEK',8,8]
-];
-const gPhase=w=>PHASES.find(p=>w>=p[1]&&w<=p[2]);
-
-const getPaces=w=>{
-  if(w===1)return {stim:'6:45–7:15/km',base:'MAF以下 / 40–60分',load:35,maf:true,zone:'E'};
-  if(w===2)return {stim:'6:30–7:00/km',base:'MAF以下 / 60分',load:45,maf:true,zone:'E'};
-  if(w===3)return {stim:'6:15–6:45/km',base:'MAF以下 / 70分',load:55,maf:true,zone:'E+'};
-  if(w===4)return {stim:'6:00–6:20/km',base:'MAF以下 / 75–80分',load:68,maf:true,zone:'M'};
-  if(w===5)return {stim:'5:50–6:00/km',base:'80–90分 LSD',load:78,maf:false,zone:'M+'};
-  if(w===6)return {stim:'5:38–5:45/km',base:'14–16km EASY',load:88,maf:false,zone:'T'};
-  if(w===7)return {stim:'5:38/km × 1kmを3本',base:'60分 EASY',load:58,maf:false,zone:'E'};
-  return {stim:'5:38/km / RACE PACE',base:'20–30分 EASY',load:28,maf:false,zone:'RACE'};
-};
-
-const WD=[
-['RESTART — 走る身体を取り戻す','速さはいらない。まず、また走る人になる。'],
-['土台を戻す','呼吸と膝を守りながら、60分を日常へ。'],
-['距離への耐性をつくる','楽に長く。ここで焦らないことが後半をつくる。'],
-['少しだけ速さを思い出す','スピードではなく、余裕のある速さを。'],
-['SUB-2を身体に近づける','目標ペースを短く触り、怖さを消す。'],
-['レースの輪郭をつくる','5:38/kmを「特別」から「知っている感覚」へ。'],
-['落とす勇気','疲労を抜きながら、速さだけ残す。'],
-['妄想が現実になる週','10/25 手賀沼エコマラソン — 1:59:xx。']
-].map((x,i)=>({w:i+1,th:x[0],sb:x[1]}));
-
-const SCH={
-A:[
-['月','MON','RESET'],['火','TUE','HIIT + STRETCH'],['水','WED','RECOVERY'],['木','THU','BUILD'],
-['金','FRI','QUIET'],['土','SAT','RUN — 刺激'],['日','SUN','RUN — 土台']],
-B:[
-['月','MON','RESET'],['火','TUE','HIIT + STRETCH'],['水','WED','RUN — 刺激'],['木','THU','RECOVERY'],
-['金','FRI','BUILD'],['土','SAT','QUIET'],['日','SUN','RUN — 土台']],
-C:[
-['月','MON','RESET'],['火','TUE','RUN — 刺激'],['水','WED','RUN — 土台'],['木','THU','RECOVERY'],
-['金','FRI','BUILD'],['土','SAT','QUIET'],['日','SUN','HIIT + STRETCH']]
-};
-
-const RUN={
-  reset:['瞑想 5–10分','散歩 20分','藻塩レモン水'],
-  recovery:['散歩 20–30分','動的ストレッチ 10分'],
-  build:['動的ストレッチ 10分','体幹トレーニング 20分'],
-  quiet:['軽いストレッチ','22:30就寝'],
-  hiit:['動的ストレッチ 10分','Running HIIT 20分','EAA補給']
-};
-
-const HIIT_ROUTINE=[
-'ハイニー 30秒','バットキック 30秒','ラテラルバンド 30秒×左右',
-'シングルレッグデッドリフト 10回×左右','グルートブリッジ 20回',
-'マウンテンクライマー 30秒','ジャンプスクワット 15回','インターバル走（その場）30秒×4set'
-];
-const STRETCH_ROUTINE=[
-'レッグスウィング 前後・左右 各10回','ヒップサークル 10回×左右','ウォーキングランジ 10歩',
-'インチワーム 5回','スコーピオン 10回×左右','カーフレイズ 20回','アームサークル 10回×前後'
-];
-
-const VDOT_SCHEDULE=[
-['9/1','RESTART','42','再始動ベースライン'],
-['9/15','W3','44','有酸素エンジン確認'],
-['9/29','W5','46','SUB-2移行確認'],
-['10/13','W7','47–48','仕上がり確認'],
-['10/25','RACE','≥48','手賀沼エコマラソン 1:59:xx']
-];
-
-const SAGES=[
-['G','David Goggins','魂への挑戦者','STAY HARD. 今日の一本は、未来の言い訳を一つ消した。'],
-['H','Andrew Huberman','神経科学者','負荷と回復のバランスが適応を作る。今日は睡眠と心拍の回復までがトレーニング。'],
-['C','James Clear','習慣設計者','1回のランではなく「走る人」というアイデンティティを今日も1票強くした。'],
-['修','中村ジェームズ修一','禅と武道','速さではなく、今日の身体に何を聴いたか。そこに次の一歩がある。'],
-['春','村上春樹','孤独と継続の哲学','僕らは距離を走ることで、少しずつ自分の輪郭を確かめている。'],
-['U','高橋盾 / UNDERCOVER','美意識と沈黙','続ける。削る。残るものだけ。']
-];
-
-const runContent=w=>({
- stim:w===1?'30–40分 EASY — 痛み0〜2/10なら継続。3/10以上は歩きへ':
-      w===2?'5km EASY — 呼吸を乱さない':
-      w===3?'6km EASY + 流し20秒×4':
-      w===4?'6km STEADY — 後半だけ少し上げる':
-      w===5?'2km EASY + 3km 5:50–6:00/km + 1km EASY':
-      w===6?'2km EASY + 5km 5:38–5:45/km + 1km EASY':
-      w===7?'2km EASY + 1km×3 @5:38/km（つなぎ2分）':
-      'RACE — 前半5:42前後 / 後半5:35前後を目安',
- base:w===1?'40–60分 EASY / WALK併用可 — MAF以下':
-      w===2?'60分 LSD — MAF以下':
-      w===3?'70分 LSD — MAF以下':
-      w===4?'75–80分 LSD — MAF以下':
-      w===5?'80–90分 LSD — 最後10分だけ自然に上げる':
-      w===6?'14–16km EASY — 完走優先、余裕を残す':
-      w===7?'60分 EASY — 疲労を残さない':
-      '20–30分 EASY + 流し2本 — 10/25 RACE'
-});
-
-const mkStrava=(wd,rc,p)=>`W${wd.w}\n\nRUN：\n${rc.stim}\n\nPACE：\n${p.stim}\n\nMAF：${MAF_HR}bpm\n\nFOCUS：\n${wd.th}\n\n${wd.sb}\n\nTARGET：1:59:00\n\nEXECUTE.\nLOG IT.\nREPEAT.`;
-const mkLong=(wd,rc,p)=>`W${wd.w}\n\nLONG RUN：\n${rc.base}\n\nPACE：\n${p.base}\n\nMAF心拍：${MAF_HR}bpm以下\n\nFOCUS：\n${wd.th}\n\n距離は裏切らない。\n\nTARGET：1:59:00`;
-const mkIG=(wd,d)=>`W${wd.w}\n\n${d}\n\n${wd.th}\n\n"${wd.sb}"\n\nTARGET 1:59:00\n10/25 手賀沼エコマラソン\n\n#妄走父さん #マラソン #サブ2 #MŌSŌRUNNINGCLUB`;
-
-const LOG_STORAGE_KEY='mrc_protocol_logs_v1';
-const LOG_BACKUP_KEY='mrc_protocol_logs_backup_v1';
-const LEGACY_LOG_KEYS=['mrc_logs','mrcLogs','logs'];
-const RESTORE_FLAG_KEY='mrc_restore_20260903_three_logs_done_v1';
-
-function normalizeSource(v){const x=String(v||'MANUAL').toUpperCase().replace(/\s+/g,'_');return ['MANUAL','APPLE_HEALTH','STRAVA','RUNKEEPER'].includes(x)?x:'MANUAL'}
-function displaySource(v){return ({MANUAL:'MANUAL',APPLE_HEALTH:'APPLE HEALTH',STRAVA:'STRAVA',RUNKEEPER:'RUNKEEPER'})[normalizeSource(v)]}
-function sourceBadge(log){const src=normalizeSource(log?.healthSource||log?.source||'MANUAL');return `<span class="sourceBadge"><i class="sourceDot"></i>${displaySource(src)}</span>`}
-
-function safeParseLogs(raw){
- try{
-  const v=JSON.parse(raw||'[]');
-  return Array.isArray(v)?v:[];
- }catch(e){return []}
-}
-function loadPersistentLogs(){
- const candidates=[LOG_STORAGE_KEY,LOG_BACKUP_KEY,...LEGACY_LOG_KEYS];
- for(const key of candidates){
-  const v=safeParseLogs(localStorage.getItem(key));
-  if(v.length){
-   localStorage.setItem(LOG_STORAGE_KEY,JSON.stringify(v));
-   localStorage.setItem(LOG_BACKUP_KEY,JSON.stringify(v));
-   localStorage.setItem('mrc_logs',JSON.stringify(v));
-   return v;
-  }
- }
- return [];
-}
-function persistLogs(logs){
- const raw=JSON.stringify(logs||[]);
- localStorage.setItem(LOG_STORAGE_KEY,raw);
- localStorage.setItem(LOG_BACKUP_KEY,raw);
- localStorage.setItem('mrc_logs',raw);
-}
-function restoreKnownThreeLogs(logs){
- if(localStorage.getItem(RESTORE_FLAG_KEY)==='1')return logs;
- const known=[
-  {
-   distance:'2.3',pace:'10:05',feeling:'',date:'2026-09-01',stravaUrl:'',week:1,
-   duration:23.1833333333,durationSec:1391,timeHms:'0:23:11',sleep:'',weight:'',avgHr:'114',maxHr:'',cadence:'',elevationGain:'',activityType:'RUN',activities:['RUN'],splits:[],rpe:'5',fatigue:'2',mood:'',pain:'',sageEncounter:false,sageIndex:null,healthSource:'MANUAL'
-  },
-  {
-   distance:'5.07',pace:'6:43',feeling:'久しぶりのrun😌 暑すぎずちょうど良かった✨',date:'2026-09-02',stravaUrl:'',week:1,
-   duration:34.0333333333,durationSec:2042,timeHms:'0:34:02',sleep:'',weight:'',avgHr:'133',maxHr:'',cadence:'',elevationGain:'',activityType:'RUN',activities:['RUN'],splits:[],rpe:'4',fatigue:'2',mood:'3',pain:'0',sageEncounter:false,sageIndex:null,healthSource:'MANUAL'
-  },
-  {
-   distance:'1.5',pace:'10:00',feeling:'🐶🐶☁️☁️散歩日和',date:'2026-09-03',stravaUrl:'',week:1,
-   duration:15,durationSec:900,timeHms:'0:15:00',sleep:'0800',weight:'65.3',avgHr:'',maxHr:'',cadence:'',elevationGain:'',activityType:'RUN',activities:['RUN','STRETCH','MOSO'],splits:[],rpe:'3',fatigue:'1',mood:'1',pain:'3',sageEncounter:false,sageIndex:null,healthSource:'MANUAL'
-  }
- ];
- for(const item of known){
-  if(!logs.some(l=>l&&l.date===item.date)) logs.push(item);
- }
- logs.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
- persistLogs(logs);
- localStorage.setItem(RESTORE_FLAG_KEY,'1');
- return logs;
-}
-
-const state={
- type:localStorage.getItem('mrc_type')||null,
- progress:JSON.parse(localStorage.getItem('mrc_progress')||'{}'),
- logs:restoreKnownThreeLogs(loadPersistentLogs()).map(l=>({...l,healthSource:normalizeSource(l?.healthSource||l?.source||'MANUAL')})),
- tab:'today',modal:null,editIndex:null,viewIndex:null,encounterIndex:null,seedDate:null,weekOpen:null,habitTab:'timeline',showVdot:false,showCurve:false,
- intentions:JSON.parse(localStorage.getItem('mrc_intentions_v1')||'{}')
-};
-const save=()=>{localStorage.setItem('mrc_progress',JSON.stringify(state.progress));persistLogs(state.logs);localStorage.setItem('mrc_intentions_v1',JSON.stringify(state.intentions||{}));if(state.type)localStorage.setItem('mrc_type',state.type)};
-const chooseType=t=>{state.type=t;save();render()};
-const setTab=t=>{state.tab=t;try{render()}catch(e){console.error('tab render',e);if(t==='memory'){document.getElementById('app').innerHTML=`<div class="wrap">${header()}${tabs()}${memoryCalendar()}</div>`}}};
-const toggleDone=k=>{state.progress[k]=!state.progress[k];if(!state.progress[k])delete state.progress[k];save();vibe();render()};
-const resetType=()=>{localStorage.removeItem('mrc_type');state.type=null;render()};
-const openLog=(idx=null)=>{state.editIndex=idx;state.modal='log';render()};
-const openHistory=(idx)=>{state.viewIndex=idx;state.modal='history';render()};
-const editFromHistory=()=>{const idx=state.viewIndex;state.viewIndex=null;state.editIndex=idx;state.modal='log';render()};
-const openHabits=()=>{state.modal='habits';render()};
-const openIntention=()=>{state.modal='intention';render()};
-const openMosoSeed=(date=null)=>{state.seedDate=date||null;state.modal='mososeed';render()};
-function acceptMissionPreset(ev){
- if(ev){ev.stopPropagation();ev.preventDefault();}
- state.intentions=state.intentions||{};
- const plan=todayMissionPlan();
- state.intentions[todayStr()]={move:[...(plan.move||[])],mind:[...(plan.mind||[])],recovery:[...(plan.recovery||[])]};
- save(); vibe(); render();
-}
-const closeModal=()=>{state.modal=null;state.editIndex=null;state.viewIndex=null;state.encounterIndex=null;state.seedDate=null;render()};
-const openEncounter=()=>{const log=latestTodayLog();if(!log||!log.sageEncounter)return;state.encounterIndex=state.logs.indexOf(log);state.modal='sage';render()};
-const toggleWeek=w=>{state.weekOpen=state.weekOpen===w?null:w;render()};
-const setHabitTab=t=>{state.habitTab=t;render()};
-const toggleVdot=()=>{state.showVdot=!state.showVdot;render()};
-const toggleCurve=()=>{state.showCurve=!state.showCurve;render()};
-
-
-function c3DemoSplits(log){
- const base=paceToSec(log?.pace||'6:43');
- const hr=Number(log?.avgHr||133)||133;
- // Preview only: deterministic offsets preserve overall character without overwriting the official log.
- const d=[10,3,-4,-6,-2,0], h=[-8,-3,0,4,7,5];
- const n=Math.max(2,splitRowCount(log?.distance||5));
- return Array.from({length:n},(_,i)=>({km:i+1,pace:secToPace(Math.max(180,base+(d[i%d.length]||0))),hr:String(Math.max(60,hr+(h[i%h.length]||0))),elevation:''}));
-}
-function historyRhythmLog(log){
- // Official C3 fallback: when STRAVA splits are absent, synthesize a stable living trace
- // from the official log values without modifying the stored activity.
- if(!Array.isArray(log?.splits)||!log.splits.length) return {...log,splits:c3DemoSplits(log),_c3Official:true};
- return log;
-}
-
-// C3 TEST TRACE: isolated direct preview path for iOS/Safari.
-// No render() dependency: TAP -> LOADING -> build test trace -> paint DOM -> SOURCE.
-let c3TapBusy=false;
-function c3PaintDirect(btn){
- const sheet=btn.closest('.sheetBody');
- if(!sheet) throw new Error('SHEET');
- const log=state.viewIndex!==null?state.logs[state.viewIndex]:null;
- if(!log) throw new Error('LOG');
- const demo={...log,splits:c3DemoSplits(log),_c3Demo:true};
- const rhythm=sheet.querySelector('.rhythm');
- const stage=rhythm&&rhythm.querySelector('.rhythmStage');
- const status=sheet.querySelector('.traceStatus');
- if(!stage||!status) throw new Error('TRACE DOM');
- // Build first. If C3 calculation fails, BASIC stays untouched and the error is visible.
- const svg=organicSvg(demo);
- stage.innerHTML=svg+(demo.sageEncounter?'<span class="mrcSagePulse" aria-hidden="true"></span>':'');
- status.innerHTML='MACRO = <b>SMOOTH</b> · MICRO = <b>ALIVE</b> · SOURCE = <b>C3 LIVING</b>';
- state.demoTrace=true;
- btn.classList.remove('is-loading');
- btn.textContent='C3 LIVING';
- btn.setAttribute('aria-pressed','true');
- const note=btn.nextElementSibling;
- if(note) note.textContent='OFFICIAL C3 LIVING TRACE';
-}
-function c3RestoreDirect(btn){
- state.demoTrace=false;
- c3TapBusy=false;
- render();
-}
-document.addEventListener('pointerdown',function(e){
- const btn=e.target.closest&&e.target.closest('#c3TestTraceBtn');
- if(btn)btn.classList.add('is-pressed');
-},{capture:true});
-document.addEventListener('pointerup',function(e){
- const btn=e.target.closest&&e.target.closest('#c3TestTraceBtn');
- if(btn)btn.classList.remove('is-pressed');
-},{capture:true});
-document.addEventListener('pointercancel',function(e){
- const btn=e.target.closest&&e.target.closest('#c3TestTraceBtn');
- if(btn)btn.classList.remove('is-pressed');
-},{capture:true});
-document.addEventListener('click',function(e){
- const btn=e.target.closest&&e.target.closest('#c3TestTraceBtn');
- if(!btn||c3TapBusy)return;
- e.preventDefault();e.stopPropagation();
- if(state.demoTrace){c3TapBusy=true;btn.classList.add('is-loading');btn.textContent='RETURNING TO BASIC…';setTimeout(()=>c3RestoreDirect(btn),180);return;}
- c3TapBusy=true;
- btn.classList.remove('is-pressed');btn.classList.add('is-loading');btn.textContent='TRACE LOADING…';
- try{vibe()}catch(_){}
- setTimeout(function(){
-   try{
-     c3PaintDirect(btn);
-     c3TapBusy=false;
-   }catch(err){
-     c3TapBusy=false;
-     btn.classList.remove('is-loading');
-     btn.textContent='C3 ERROR · '+String(err&&err.message?err.message:'UNKNOWN');
-     btn.style.borderColor='rgba(196,185,154,.9)';
-     const sheet=btn.closest('.sheetBody'),status=sheet&&sheet.querySelector('.traceStatus');
-     if(status)status.innerHTML='MACRO = <b>SMOOTH</b> · MICRO = <b>ALIVE</b> · SOURCE = <b>C3 ERROR</b>';
-   }
- },300);
-},{capture:true});
-
-function dayCountDone(){
- return Object.entries(state.progress).filter(([k,v])=>{
-   if(!v||!/^\d{4}-\d{2}-\d{2}$/.test(k))return false;
-   const d=new Date(k+'T00:00:00'); return d>=START&&d<=RACE_DAY;
- }).length;
-}
-function streak(){
- let s=0; const t=new Date();
- for(let i=0;i<TOTAL_DAYS;i++){
-   const d=new Date(t); d.setDate(t.getDate()-i);
-   if(state.progress[dKey(d)])s++; else break;
- }
- return s;
-}
-
-function sleepDigitsToDisplay(v){
- const s=String(v??'').replace(/\D/g,'').slice(0,4); if(!s)return '';
- if(s.length<=2){const h=Number(s);return h<=24?`${h}:00`:''}
- const h=Number(s.slice(0,-2)),m=Number(s.slice(-2)); if(h>24||m>59||(h===24&&m>0))return '';
- return `${h}:${String(m).padStart(2,'0')}`;
-}
-function normalizeSleepValue(v){
- const raw=String(v??'').trim(); if(!raw)return '';
- if(raw.includes(':')){const [h,m='0']=raw.split(':');const hh=Number(h),mm=Number(m);return (hh>=0&&hh<=24&&mm>=0&&mm<60&&!(hh===24&&mm>0))?`${hh}:${String(mm).padStart(2,'0')}`:''}
- if(/^\d+(\.\d+)?$/.test(raw) && raw.includes('.')){const n=Number(raw);if(n>=0&&n<=24){const h=Math.floor(n),m=Math.round((n-h)*60);return `${h}:${String(m===60?0:m).padStart(2,'0')}`}}
- return sleepDigitsToDisplay(raw);
-}
-function updateSleepPreview(){const el=document.getElementById('lsleep'),p=document.getElementById('sleepFormatted');if(p&&el)p.textContent=normalizeSleepValue(el.value)||'H:MM'}
-function collectLifeActivities(){
- const primary=document.getElementById('latype')?.value||'RUN';
- const extras=[...document.querySelectorAll('input[name="lifeActivityExtra"]:checked')].map(x=>normalizeActivity(x.value));
- return [...new Set([primary,...extras])];
-}
-function updateLifeStackSummaries(){
- document.querySelectorAll('.lifeStackGroup').forEach(group=>{
-  const picked=[...group.querySelectorAll('input[name="lifeActivityExtra"]:checked')].map(x=>displayActivity(x.value));
-  const summary=group.querySelector('.lifeStackSummary'); if(summary)summary.textContent=picked.length?picked.join(' · '):'NONE';
- });
-}
-function toggleLifeStack(btn){const group=btn.closest('.lifeStackGroup');if(group)group.classList.toggle('open')}
-function syncActivityFields(){
- const sel=document.getElementById('latype'); if(!sel)return;
- const type=sel.value;
- const distanceActivity=['RUN','WALK','HIKE','CYCLING','SWIM'].includes(type);
- document.querySelectorAll('[data-distance-field]').forEach(el=>el.style.display=distanceActivity?'':'none');
- const split=document.querySelector('[data-split-field]'); if(split)split.style.display=distanceActivity?'':'none';
- const strava=document.querySelector('[data-strava-field]'); if(strava)strava.style.display=distanceActivity?'':'none';
- const time=document.querySelector('[data-time-field]'); if(time)time.style.display=type==='REST'?'none':'';
- const moveLabel=document.getElementById('moveModeLabel'); if(moveLabel)moveLabel.textContent=distanceActivity?'MOVE · DISTANCE TRACE':'MOVE · TIME TRACE';
-}
-function showAfterglowMoment(logIndex){
- const old=document.getElementById('afterglowMoment');if(old)old.remove();
- const el=document.createElement('div');el.id='afterglowMoment';el.className='afterglowMoment';
- el.innerHTML='<div class="afterglowInner"><div class="afterglowPulse"></div><div class="afterglowLived">LIVED.</div><div class="afterglowJa">今日が、ひとつの LIFE MEMORY になりました。</div><div class="afterglowSub">INTENTION → ACTION → MEMORY</div><div class="afterglowMore" style="pointer-events:none;border:0;opacity:.45">DETAILS CAN WAIT · EDIT FROM MEMORY</div></div>';
- document.body.appendChild(el);
- setTimeout(()=>{if(el.isConnected)el.remove()},3200);
-}
-function openAfterglowDetails(i){
- const el=document.getElementById('afterglowMoment');if(el)el.remove();
- state.editIndex=i;state.modal='log';render();setTimeout(syncActivityFields,0);
-}
-function showGrowthMoment(){
- const old=document.getElementById('growthMoment');if(old)old.remove();
- const el=document.createElement('div');el.id='growthMoment';el.className='growthMoment';
- el.innerHTML='<div class="growthMomentInner"><div class="growthMomentLine"></div><div class="growthMomentText">TODAY GREW THIS SEED.</div><div class="growthMomentSub">ACTION → MEMORY → GROWTH</div></div>';
- document.body.appendChild(el);
- setTimeout(()=>el.remove(),2400);
-}
-function addOrUpdateLog(){
- const dist=document.getElementById('ld').value, timeRaw=document.getElementById('lt').value, timeSec=timeDigitsToSec(timeRaw), pace=calcPace(dist,timeSec),
- feel=document.getElementById('lf').value.trim(), date=document.getElementById('l_date').value,
- url=document.getElementById('lu').value.trim(),duration=timeSec?timeSec/60:'',
- avgHr=document.getElementById('lhr').value,maxHr=document.getElementById('lmhr').value,cadence=document.getElementById('lcad').value,
- elevationGain=document.getElementById('lelev').value,activityType=document.getElementById('latype').value,splits=normalizedSplits(collectSplitDraft()),
- rpe=document.getElementById('lrpe').value,fatigue=document.getElementById('lfat').value,mood=document.getElementById('lmood').value,pain=document.getElementById('lpain').value,
- sleep=normalizeSleepValue(document.getElementById('lsleep').value),weight=document.getElementById('lweight').value,activities=collectLifeActivities();
- const distanceActivity=['RUN','WALK','HIKE','CYCLING','SWIM'].includes(activityType);
- if(distanceActivity && (!isValidDist(dist)||!timeSec||!isValidPace(pace))){alert('RUN / WALK / HIKE / CYCLING / SWIM は DISTANCE・TIME を入力してね');return}
- if(!distanceActivity && activityType!=='REST' && !timeSec){alert('このACTIVITYは TIME を入力してね');return}
- const w=curWeek(),prev=state.editIndex===null?null:state.logs[state.editIndex];
- const encounter=prev?!!prev.sageEncounter:(Math.random()<.18);
- const data={distance:distanceActivity?dist:'',pace:distanceActivity?pace:'',feeling:feel,date,stravaUrl:isValidStravaUrl(url)?url:'',week:w,
-  duration:duration||'',durationSec:timeSec||'',timeHms:timeSec?secToHMS(timeSec):'',sleep:sleep||'',weight:weight||'',avgHr:avgHr||'',maxHr:maxHr||'',cadence:cadence||'',elevationGain:elevationGain||'',activityType:activityType||'RUN',activities,splits,rpe:rpe||'',fatigue:fatigue||'',mood:mood||'',pain:pain||'',
-  sageEncounter:encounter,sageIndex:prev?.sageIndex ?? (encounter?Math.floor(Math.random()*SAGES.length):null),healthSource:normalizeSource(prev?.healthSource||'MANUAL')};
- if(state.editIndex===null){state.logs.push(data);state.modal=null} else {state.logs[state.editIndex]=data;state.modal=null;state.editIndex=null}
- save();vibe();render();setTimeout(showGrowthMoment,90);
-}
-function deleteLog(){
- if(state.editIndex===null)return;
- state.logs.splice(state.editIndex,1);save();state.modal=null;state.editIndex=null;render()
-}
-
-function onboarding(){
- return `<div class="onboard"><div class="ob">
- <div class="obtitle"><div class="brand">MŌSŌ RUNNING CLUB</div><div class="logo">MRC</div><div class="protocol">Protocol</div><div class="rule"></div><div class="title">いつ走る？</div><div class="sub">週2回のランデーを選ぶだけ。<br>あとはプロトコルが設計する。</div></div>
- ${[
- ['A','週末にまとめて走る','土 + 日','平日はHIIT・ストレッチで整え、週末2回で積み上げる。'],
- ['B','平日1回 + 日曜に走る','水 + 日','週中に刺激を入れ、日曜のLSDで土台を作る。（推奨）'],
- ['C','平日2日続けて走る','火 + 水','刺激と土台を連日で入れ、週後半を回復に使う。']
- ].map(o=>`<button class="opt" onclick="chooseType('${o[0]}')"><span class="optdays">${o[2]}</span><div class="optname">${o[1]}</div><div class="optdetail">${o[3]}</div><div class="phase">TYPE ${o[0]} →</div></button>`).join('')}
+function selectScreen(){
+ return `<div class="select-screen"><div class="select-inner fade">
+   <div class="choose">CHOOSE YOUR PATH</div>
+   <div class="protocol-grid">
+    ${["A","B","C"].map(id=>`<button class="protocol-btn" onclick="selectProtocol('${id}')">PROTOCOL ${id}</button>`).join("")}
+   </div>
  </div></div>`;
 }
 
-function header(){
- const progress=elapsedDay(),pct=Math.min(100,Math.round(progress/TOTAL_DAYS*100)),st=streak();
- return `<div class="hero"><div class="brand">MŌSŌ RUNNING CLUB</div><div class="logo">MRC</div><div class="protocol">Protocol</div><div class="rule"></div><div class="tag">DESIGN YOUR LIFE. RUN IT.</div>
- <div class="progressLine"><div class="progressFill" style="width:${pct}%"></div></div>
- <div class="stats"><div class="stat"><small>PROGRESS</small><b>${progress}<span class="muted">/${TOTAL_DAYS}</span></b></div>
- ${st?`<div class="chip">🔥 ${st}D STREAK</div>`:''}
- <div class="stat" style="text-align:right"><small>TARGET</small><b>1:59:00</b></div></div>
- ${(()=>{const seed=loadMosoSeed(),d=seedDays();return `<div class="realityCountdown" onclick="openMosoSeed()" style="cursor:pointer"><div class="days">${d===0?'SEED → REALITY ✨':d+' DAYS TO REALITY'}</div><div class="dest">${seedDateLabel(seed.date)} · ${esc(seed.destination)} · ${esc(seed.target)}</div></div>`})()}
- <div class="metrics"><div class="metric"><small>START</small><b>9/1</b></div><div class="metric"><small>RACE PACE</small><b style="color:var(--beige)">${mmss(RACE_PACE)}/km</b></div><div class="metric"><small>RACE DAY</small><b>10/25</b></div></div></div>`;
-}
-function tabs(){return `<div class="tabs">${['today','weeks','schedule','pace','memory','logs'].map(t=>`<button class="tab ${state.tab===t?'on':''}" onclick="setTab('${t}')">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>`}
-
-function copyBtns(wd,rc,p,isStim=true){
- return `<div style="display:flex;gap:6px;margin-top:8px">
- <button class="btn" style="margin-top:0" onclick="copyText(\`${mkStrava(wd,rc,p).replace(/`/g,'\\`')}\`)">STRAVA COPY</button>
- <button class="btn" style="margin-top:0" onclick="copyText(\`${mkLong(wd,rc,p).replace(/`/g,'\\`')}\`)">LONG COPY</button>
- <button class="btn" style="margin-top:0" onclick="copyText(\`${mkIG(wd,isStim?rc.stim:rc.base).replace(/`/g,'\\`')}\`)">IG COPY</button>
+function weatherProtocol(){
+ const rainy=new Date().getSeconds()%2===0;
+ if(!rainy) return "";
+ return `<div class="card weather fade">
+   <div class="label">WEATHER PROTOCOL ACTIVE</div>
+   <div class="weather-text">Today is for recovery.<br>Listen to the body.</div>
  </div>`;
 }
 
-function packBadge(w){
- if(w<5)return '';
- const cnt=state.logs.length;
- const need=w>=6?10:5, unlocked=cnt>=need;
- return `<div class="inner"><div class="label">${w>=6?'THE FIRST PACK — ON SALE':'THE FIRST PACK — PREVIEW'}</div>
- <div class="logtop"><span class="title" style="font-size:14px">Serial No. MRC — ${unlocked?String(cnt).padStart(3,'0'):'????'}</span><span class="phase">${unlocked?'UNLOCKED':'LOCKED'}</span></div>
- <div class="progressLine" style="margin-top:10px"><div class="progressFill" style="width:${Math.min(cnt/need*100,100)}%"></div></div>
- <div class="wmeta" style="margin-top:6px">${unlocked?'購入権／プレビュー解放済み':`ログ ${cnt}/${need} — あと${need-cnt}回`}</div></div>`;
+function sessionCard(){
+ return `<div class="card">
+   <div class="label">LAST SESSION</div>
+   <div class="mono">DISTANCE : 8.12km<br>PACE : 5'42<br>HR AVG : 148<br>VO2 EST : 51</div>
+ </div>`;
 }
 
-function todayLifeStack(todays){
- const all=[]; todays.forEach(l=>{(Array.isArray(l.activities)&&l.activities.length?l.activities:[l.activityType||'RUN']).forEach(a=>all.push(normalizeActivity(a)))});
- const uniq=[...new Set(all)], latest=todays.length?todays[todays.length-1]:null;
- const actualMove=uniq.filter(a=>['RUN','WALK','CYCLING','SWIM','HIKE','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY'].includes(a));
- const actualMind=uniq.filter(a=>['MEDITATION','BREATHWORK','MOSO','SLEP'].includes(a));
- const actualRecovery=uniq.filter(a=>['RECOVERY','REST'].includes(a));
- const body=[]; if(latest?.sleep)body.push(normalizeSleepValue(latest.sleep)+' H'); if(latest?.weight)body.push(latest.weight+' KG');
- const intent=intentionForToday();
- const plannedMove=(intent.move||[]).map(normalizeActivity),plannedMind=(intent.mind||[]).map(normalizeActivity),plannedRecovery=(intent.recovery||[]).map(normalizeActivity);
- const lived=todays.length>0;
- const move=lived?actualMove:plannedMove,mind=lived?actualMind:plannedMind,recovery=lived?actualRecovery:plannedRecovery;
- const rows=[['BODY',body.length?body:['CHECK']],['MOVE',move.map(displayActivity)],['MIND',mind.map(displayActivity)],['RECOVERY',recovery.map(displayActivity)]];
- const saved=!!((state.intentions||{})[todayStr()]);
- const status=lived?'LIVED':saved?'INTENTION':'SET TODAY';
- const phaseAction=(!lived&&!saved)?`<button onclick="acceptMissionPreset(event)" style="appearance:none;background:none;border:0;padding:8px 0 8px 12px;color:var(--beige);font:inherit;letter-spacing:inherit">${status} →</button>`:`<span class="phase">${status} →</span>`;
- return `<div class="inner" onclick="openIntention()" style="cursor:pointer"><div class="logtop"><div><div class="label">TODAY · LIFE STACK</div><div class="mission" style="font-size:16px;margin-top:5px">今日、どう生きる？</div></div>${phaseAction}</div><div style="margin-top:15px">${rows.map(([k,v])=>`<div style="display:grid;grid-template-columns:82px 1fr;gap:12px;padding:9px 0;border-top:1px solid rgba(196,185,154,.09)"><span class="wmeta">${k}</span><span class="mono" style="font-size:10px;letter-spacing:1.6px;color:${v.length?'var(--white)':'var(--muted)'}">${v.length?v.join(' · '):'—'}</span></div>`).join('')}</div>${intentionGrowsHTML(lived?{move:rows[1][1],mind:rows[2][1],recovery:rows[3][1]}:intent,true,'THIS LIFE GROWS')}<div class="fieldGuide" style="margin-top:8px"><span>${lived?'ACTION → MEMORY':'INTENTION → ACTION → MEMORY'}</span><span>${lived?'TAP TO ADJUST':saved?'SET · TAP TO ADJUST':'MISSION PRESET · ONE TAP SET'}</span></div></div>`;
-}
-
-function intentionModal(){
- const cur=intentionForToday();
- const groups=[['MOVE',['RUN','WALK','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY']],['MIND',['MEDITATION','BREATHWORK','MOSO','SLEP']],['RECOVERY',['RECOVERY']]];
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">TODAY · INTENTION</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody"><div class="label">今日、どう生きる？</div><div class="mission" style="margin:8px 0 22px">INTENTION → ACTION → MEMORY</div>${groups.map(([g,items])=>`<div class="lifeStackGroup"><div class="lifeStackHead" style="cursor:default"><span class="lifeStackTitle">${g}</span></div><div style="display:grid;gap:10px;padding:12px 0 18px">${items.map(a=>`<label class="lifeActivityOption"><input type="checkbox" name="intent_${g}" value="${a}" ${(cur[g.toLowerCase()]||[]).includes(a)?'checked':''}><span>${displayActivity(a)}</span></label>`).join('')}</div></div>`).join('')}${intentionGrowsHTML(cur)}<button class="btn primary" onclick="saveIntention()">SET TODAY →</button><button class="btn" onclick="clearIntention()">CLEAR INTENTION</button><div class="fieldGuide"><span>PLAN LIGHTLY · LIVE FULLY</span><span>LIFE LOG = ACTUAL</span></div></div></div></div>`;
-}
-function saveIntention(){
- const pick=g=>[...document.querySelectorAll(`input[name="intent_${g}"]:checked`)].map(x=>x.value);
- state.intentions=state.intentions||{}; state.intentions[todayStr()]={move:pick('MOVE'),mind:pick('MIND'),recovery:pick('RECOVERY')}; save(); state.modal=null; vibe(); render();
-}
-function clearIntention(){state.intentions=state.intentions||{};delete state.intentions[todayStr()];save();state.modal=null;render();}
-
-function today(){
- const w=curWeek(),wd=WD[w-1],di=dayIdx(); let day=SCH[state.type][di];
- const isRestartDay=todayStr()==='2026-09-01'; if(isRestartDay)day=['火','TUE','RESTART CHECK-IN'];
- const p=getPaces(w),rc=runContent(w),isStim=day[2].includes('刺激'),isBase=day[2].includes('土台'),isHiit=day[2].includes('HIIT'),key=todayStr(),isDone=!!state.progress[key];
- let detail=isRestartDay?`20–30分 WALK + 10分 MOBILITY<br>膝の痛みを0–10で確認。0–2なら最後に10分だけEASY JOG。<div class="pace">TODAY = RESTART / NO SPEED</div>`:
- isStim?`${rc.stim}<div class="pace">PACE ${p.stim}${p.maf?` / MAF ${MAF_HR}bpm`:''}</div>`:
- isBase?`${rc.base}<div class="pace">MAF ${MAF_HR}bpm以下 · ${p.base}</div>`:
- isHiit?`動的ストレッチ 10分<br>Running HIIT 20分<div class="pace">EAA補給</div>`:
- `${day[2]} / 散歩・ストレッチ・回復を優先`;
- const todays=state.logs.filter(l=>l.date===todayStr());
-
- return `<div class="content"><div class="card"><div class="cardhead"><span class="eyebrow">TODAY — ${todayMD()} ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]}</span><span class="muted mono">W${String(w).padStart(2,'0')} · ${wDates(w)}</span></div>
- <div class="cardbody"><div class="phase">${gPhase(w)[0]}</div><div class="title">${wd.th}</div><div class="sub">${wd.sb}</div>
- <div class="inner"><div class="label">TODAY'S MISSION</div><div class="mission">${day[2]}</div><div class="line">${detail}</div></div>
- ${livingRhythm(todays.length?todays[todays.length-1]:null)}
- ${todayLifeStack(todays)}
- ${todays.length?`<div class="inner"><div class="todayLogHeading"><div class="todayLogTitle">TODAY'S LIFE LOG · ${todayMD()} ${['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()]}</div>${weatherBadge()}</div>${todays.map((l,i)=>`<div class="logitem" onclick="openLog(${state.logs.indexOf(l)})"><div class="logtop"><span class="logkm">${displayActivity(l.activityType||'RUN')}${l.distance?` · ${l.distance}km`:''}${l.pace?` · ${l.pace}/km`:''}${l.durationSec?` · ${secToHMS(l.durationSec)}`:''}${l.avgHr?` · ♥ ${l.avgHr}`:""}</span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><span class="feel">${l.feeling}</span>${logWeatherBadge(l)}${sourceBadge(l)}</span></div>${l.stravaUrl?`<a class="strava" target="_blank" onclick="event.stopPropagation()" href="${l.stravaUrl}">STRAVA →</a>`:''}</div>`).join('')}</div>`:''}
- <button class="btn primary" onclick="openLog()">+ LIFE LOG →</button>
- ${(isStim||isBase)?copyBtns(wd,rc,p,isStim):''}
- <button class="btn" onclick="openHabits()">DAILY PROTOCOL →</button>
- <button class="btn ${isDone?'done':''}" onclick="toggleDone('${key}')">${isDone?'✓ TODAY DONE':'MARK TODAY DONE'}</button>
- ${packBadge(w)}
- </div></div>
- <button class="btn" onclick="toggleCurve()">${state.showCurve?'▴ HIDE LOAD CURVE':'▾ 8W LOAD CURVE'}</button>
- ${state.showCurve?loadCurve():''}
- <button class="btn" onclick="resetType()">スケジュール Type ${state.type} を変更</button></div>`;
-}
-
-function loadCurve(){
- const loads=WD.map(x=>getPaces(x.w).load),max=100;
- return `<div class="inner"><div class="label">8W LOAD CURVE</div><div style="display:flex;align-items:end;gap:6px;height:90px;margin-top:10px">
- ${loads.map((l,i)=>`<div style="flex:1;text-align:center"><div style="height:${l*.7}px;background:var(--khaki);opacity:${i+1===curWeek()?1:.45};border-radius:2px 2px 0 0"></div><div class="wmeta">W${i+1}</div></div>`).join('')}</div></div>`;
-}
-
-function weeks(){
- const cw=curWeek();
- return `<div class="content">${WD.map(w=>{
- const open=state.weekOpen===w.w,p=getPaces(w.w),rc=runContent(w.w),sch=SCH[state.type];
- return `<div class="week ${w.w===cw?'current':''}">
- <div class="weekrow" onclick="toggleWeek(${w.w})"><button class="wbox" onclick="event.stopPropagation();toggleDone('${w2key(w.w)}')">${state.progress[w2key(w.w)]?'✓':String(w.w).padStart(2,'0')}</button><div class="weekmain"><div class="wphase">${gPhase(w.w)[0]} · ${wDates(w.w)}</div><div class="wtitle">${w.th}</div><div class="wmeta">${w.sb}</div></div><div>▾</div></div>
- ${open?`<div style="padding:0 12px 12px;border-top:1px solid var(--border)">
- <div class="inner"><div class="logtop"><span><div class="label">刺激の日</div><b class="mono">${p.stim}</b></span><span style="text-align:right"><div class="label">土台の日</div><b class="mono">${p.base}</b></span></div></div>
- ${sch.map(d=>{const stim=d[2].includes('刺激'),base=d[2].includes('土台'),hiit=d[2].includes('HIIT');let body=stim?rc.stim:base?rc.base:hiit?'動的ストレッチ → Running HIIT → EAA':d[2];return `<div class="day"><div class="dayname"><div class="jp">${d[0]}</div><div class="en">${d[1]}</div></div><div class="daybody"><div class="daytype">${d[2]}</div><div class="line">${body}</div></div></div>`}).join('')}
- ${copyBtns(w,rc,p,true)}
- <button class="btn ${state.progress[w2key(w.w)]?'done':''}" onclick="toggleDone('${w2key(w.w)}')">${state.progress[w2key(w.w)]?'✓ WEEK COMPLETE':'MARK WEEK COMPLETE'}</button>
- </div>`:''}</div>`}).join('')}</div>`;
-}
-
-function schedule(){
- const w=curWeek(),p=getPaces(w),rc=runContent(w),todayi=dayIdx();
- return `<div class="content"><div class="inner" style="margin-top:0"><div class="label">${gPhase(w)[0]}</div><div class="title">${WD[w-1].th}</div><div class="pace">刺激 ${p.stim} ${p.maf?`· MAF ${MAF_HR}bpm`:''}</div></div>
- <div class="inner"><div class="label">RUN PREP</div><div class="line">動的ストレッチ 10分 → クレアチン / EAA補給</div></div>
- ${SCH[state.type].map((d,i)=>{let txt=d[2].includes('刺激')?rc.stim:d[2].includes('土台')?rc.base:d[2].includes('HIIT')?'動的ストレッチ → Running HIIT → EAA':d[2];return `<div class="day ${i===todayi?'today':''}"><div class="dayname"><div class="jp">${d[0]}</div><div class="en">${d[1]}</div></div><div class="daybody"><div class="daytype">${d[2]}</div><div class="line">${txt}</div></div></div>`}).join('')}
- <div class="inner"><div class="label">POST RUN</div><div class="line">クールダウン歩行 5分 → プロテイン補給</div></div>
- <div class="inner"><div class="label">DAILY HABITS</div><div class="chips">${['🌅 瞑想・散歩','🌿 藻塩レモン水','💊 クレアチン・EAA','📓 ジャーナル','🛁 入浴','🌙 22:30就寝'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></div></div>`;
-}
-
-function pace(){
- return `<div class="content"><div class="inner" style="margin-top:0;display:flex;justify-content:space-between"><div><div class="label">MAF HEART RATE</div><div style="font:22px var(--mono);color:var(--khaki)">${MAF_HR} <small>bpm</small></div><div class="wmeta">180 − 47</div></div><div style="text-align:right"><div class="label">RACE PACE</div><div style="font:22px var(--mono)">${mmss(RACE_PACE)}<small>/km</small></div><div class="wmeta">Target 1:59:00</div></div></div>
- ${WD.map(w=>{const p=getPaces(w.w);return `<div class="pacerow"><div class="pacew">W${w.w}</div><div class="pacebody"><div class="wphase">${gPhase(w.w)[0]}</div><div class="pacetype">${w.w===8?'RACE WEEK':p.zone+' ZONE'}</div></div><div><div class="zone">${p.zone}</div><div class="paceval">${p.stim}</div></div></div>`}).join('')}
- <button class="btn" onclick="toggleVdot()">${state.showVdot?'▴ HIDE VDOT SCHEDULE':'▾ VDOT MEASUREMENT SCHEDULE'}</button>
- ${state.showVdot?`<div class="inner">${VDOT_SCHEDULE.map(v=>`<div class="logtop" style="padding:8px 0;border-bottom:1px solid var(--border)"><span><b>${v[0]}</b><div class="wmeta">${v[1]} · ${v[3]}</div></span><span class="logkm">VDOT ${v[2]}</span></div>`).join('')}</div>`:''}</div>`;
-}
-
-
-function memoryMiniPath(log){
- const hr=Number(log?.avgHr)||110, rpe=Number(log?.rpe)||3, f=Number(log?.fatigue)||1;
- const amp=Math.max(3,Math.min(11,3+(hr-100)*.08+rpe*.45-f*.18));
- let pts=[];for(let i=0;i<=24;i++){const x=i/24*100,e=Math.sin(Math.PI*i/24);const y=12+Math.sin(i*.72+(hr%11)*.1)*amp*e*.22+Math.sin(i*.31)*amp*e*.12;pts.push(`${x.toFixed(1)},${y.toFixed(1)}`)}
- return 'M'+pts.join(' L');
-}
-
-function seedForestHTML(){
- try{
-  const primary=loadMosoSeed();
-  const planted=loadPlantedSeeds();
-  const rows=[{...primary,_primary:true}];
-  Object.keys(planted).sort().forEach(date=>{
-   const s=planted[date];
-   if(!s)return;
-   const duplicate=date===primary.date && String(s.moso||'')===String(primary.moso||'');
-   if(!duplicate)rows.push({...s,date,_primary:false});
-  });
-  rows.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  const itemHTML=rows.map(s=>{
-   const g=seedGrowth(s);
-   const date=esc(s.date||'');
-   const dateShort=date ? date.slice(5).replace('-','/') : '—';
-   const click=s._primary ? "openMosoSeed()" : `openMosoSeed('${date}')`;
-   return `<button class="seedForestItem" onclick="${click}">
-    <span class="seedForestVisual">${seedVisualHTML(s)}</span>
-    <span class="seedForestDate">${dateShort}</span>
-    <span class="seedForestMoso">${esc(s.moso||'UNTITLED SEED')}</span>
-    <span class="seedForestStage">${g.stage}</span>
-   </button>`;
-  }).join('');
-  return `<div class="seedForest">
-   <div class="seedForestHead">
-    <div><div class="seedForestTitle">SEED FOREST</div><div class="sub" style="margin-top:6px">これから生きたい人生を、先に植えておく。</div></div>
-    <div class="seedForestCount">${rows.length} SEED${rows.length===1?'':'S'}</div>
+function weeksView(weeks,currentWeek){
+ return `<div class="fade">
+ ${weeks.map(w=>`<div class="week ${w.week===currentWeek?"current":""}">
+   <div class="week-head">
+    <div><div class="weeknum">WEEK ${String(w.week).padStart(2,"0")}</div><div class="phase">${w.phase}</div></div>
+    <div class="load">LOAD ${w.load}%</div>
    </div>
-   <div class="seedForestList">${itemHTML}</div>
-   <div class="seedForestHint"><span>SEED → SPROUT → GROW → REALITY</span><span>TAP TO OPEN</span></div>
-  </div>`;
- }catch(e){console.error('seed forest',e);return ''}
+   <div class="tasks">
+     ${w.tasks.map(task=>{
+       const key=`${w.week}-${task}`;
+       return `<button class="task ${state.progress[key]?"done":""}" onclick="toggleProgress('${key.replace(/'/g,"\\'")}')">${task}</button>`;
+     }).join("")}
+   </div>
+ </div>`).join("")}
+ <div class="terminate-wrap"><button class="terminate" onclick="resetProtocol()">TERMINATE CURRENT PROTOCOL</button></div>
+ </div>`;
 }
 
-function memoryCalendar(){
- // MEMORY STABLE — isolated, fail-soft island.
- // It must render even if seed/weather/trace metadata is malformed.
- try{
-   const startKey='2026-09-01', realityKey='2026-10-25';
-   const safeToday=(()=>{try{return todayStr()}catch(e){return '2026-09-03'}})();
-   const parseKey=(k)=>{const m=String(k||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return null;return Date.UTC(+m[1],+m[2]-1,+m[3])};
-   const startMs=parseKey(startKey), endMs=parseKey(realityKey), todayMs=parseKey(safeToday)||startMs;
-   const days=[];
-   for(let ms=startMs;ms<=endMs;ms+=86400000){const d=new Date(ms);days.push({date:`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`,day:d.getUTCDate(),dow:d.getUTCDay()})}
-   const logsSafe=Array.isArray(state.logs)?state.logs:[];
-   const planted=loadPlantedSeeds();
-   const byDate={};logsSafe.forEach((l,i)=>{if(l&&/^2026-\d{2}-\d{2}$/.test(String(l.date||'')))byDate[String(l.date)]={l,i}});
-   const first=days[0]?.dow||0,cells=Array(first).fill(null).concat(days),lived=days.filter(x=>byDate[x.date]).length;
-   const elapsed=Math.max(1,Math.min(days.length,Math.floor((todayMs-startMs)/86400000)+1));
-   const pct=Math.round((lived/days.length)*100);
-   let seed={...DEFAULT_MOSO_SEED};try{seed=loadMosoSeed()||seed}catch(e){}
-   const moso=esc(seed.moso||'ハーフ2時間を切る'),why=esc(seed.why||'もう一度、走れる身体を取り戻す');
-   const destination=esc(seed.destination||'TEGA HALF'),target=esc(seed.target||'1:59:00');
-   const remaining=Math.max(0,Math.ceil((endMs-todayMs)/86400000));
-   const mini=(log)=>{try{return `<svg class="miniTrace" viewBox="0 0 100 24"><path d="${memoryMiniPath(log)}"/></svg>`}catch(e){return '<span class="seedDot"></span>'}};
-   const weather=(log)=>{try{const w=log?.weather;return w?`<span class="weatherMini">${weatherGlyph(w.code)}</span>`:''}catch(e){return ''}};
-   return `<div class="content"><div class="memoryHero"><div class="label">LIFE MEMORY · SEED → REALITY</div><div class="memoryJourney"><div class="big">${moso}</div><div class="small">${lived} MEMORIES<br>${lived} / ${days.length} DAYS LIVED · ${pct}%</div></div><div class="memoryStrip"><div class="memoryStripTitle">LIVING TRACE · OCT 25</div><div class="memoryTraceLine">${days.map(x=>`<span class="memoryTraceNode ${byDate[x.date]?'lived ':''}${x.date===safeToday?'today':''}"></span>`).join('')}</div></div></div>${seedForestHTML()}<div class="inner"><div class="logtop"><div><div class="label">55 DAYS OF LIFE</div><div class="mission">一日ひとつの、生きた痕跡。</div></div><span class="phase">${remaining} DAYS →</span></div><div class="memoryGrid">${['SUN','MON','TUE','WED','THU','FRI','SAT'].map(x=>`<div class="memoryDow">${x}</div>`).join('')}${cells.map(x=>{if(!x)return '<div class="memoryCell blank"></div>';const hit=byDate[x.date],future=x.date>safeToday;const plantedSeed=planted[x.date];return `<div class="memoryCell ${hit?'lived ':''}${future?'future ':''}${plantedSeed?'planted ':''}${x.date===safeToday?'today':''}" ${hit?`onclick="openHistory(${hit.i})"`:future?`onclick="openMosoSeed('${x.date}')"`:''}><span class="d">${x.day}</span>${hit?mini(hit.l):(plantedSeed?seedGrowthHTML(plantedSeed):'<span class="seedDot"></span>')}${hit?weather(hit.l):''}</div>`}).join('')}</div><div class="memoryLegend"><span>● SEED / FUTURE</span><span>TRACE = LIFE MEMORY</span><span>□ TODAY</span></div></div><div class="inner"><div class="label">WHY</div><div class="line">${why}</div><div class="fieldGuide" style="margin-top:12px"><span>THE DAYS ARE THE REALITY.</span><span>${destination} · ${target}</span></div></div></div>`;
- }catch(err){
-   console.error('MEMORY stable fallback',err);
-   return `<div class="content"><div class="inner" style="margin-top:0"><div class="label">LIFE MEMORY · SEED → REALITY</div><div class="title">ハーフ2時間を切る</div><div class="sub">MEMORY IS STILL ALIVE.</div></div><div class="inner"><div class="label">55 DAYS OF LIFE</div><div class="line">9/1 → 10/25</div><div class="sub">記録は保持されています。MEMORY表示の一部だけを安全に待機しています。</div></div></div>`;
- }
-}
-function logs(){
- const total=state.logs.reduce((s,l)=>s+(parseFloat(l.distance)||0),0),str=state.logs.filter(l=>l.stravaUrl).length;
- return `<div class="content"><div class="metrics" style="margin-bottom:12px"><div class="metric"><small>TOTAL KM</small><b>${total.toFixed(1)}</b></div><div class="metric"><small>RUNS</small><b>${state.logs.length}</b></div><div class="metric"><small>STRAVA</small><b style="color:var(--orange)">${str}</b></div></div>
- <button class="btn primary" onclick="openLog()">+ LOG</button>
- ${[...state.logs].map((l,i)=>({l,i})).reverse().map(x=>`<div class="logitem" onclick="openHistory(${x.i})"><div class="logtop"><div><span class="logkm">${x.l.distance}km · ${x.l.pace}/km${x.l.avgHr?` · ♥ ${x.l.avgHr}`:""}</span><div class="feel">${x.l.feeling}</div></div><span style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><span class="logdate">${x.l.date}</span>${logWeatherBadge(x.l)}${sourceBadge(x.l)}</span></div><div class="logHistoryWave">${livingRhythm(x.l)}</div>${x.l.stravaUrl?`<a class="strava" target="_blank" onclick="event.stopPropagation()" href="${x.l.stravaUrl}">STRAVA →</a>`:''}<div class="wmeta" style="margin-top:5px">TAP — RELIVE THIS RHYTHM</div></div>`).join('')||'<div class="sub" style="text-align:center;padding:40px">ログがまだありません</div>'}</div>`;
+function logsView(){
+ return `<div class="fade">
+  <div class="card log-advice">
+   <div class="label">SAGE ADVICE</div>
+   <div class="advice">"${state.advice}"</div>
+  </div>
+  ${state.logs.map(l=>`<div class="log-item"><div class="log-date">${l.date}</div><div class="log-text">${l.text}</div></div>`).join("")}
+  <button class="addlog" onclick="addLog()">ADD DAILY LOG</button>
+ </div>`;
 }
 
-function habitsModal(){
- const tab=state.habitTab;
- const tabs=['timeline','nutrition','hiit','stretch'];
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">DAILY PROTOCOL</span><button class="close" onclick="closeModal()">×</button></div>
- <div style="display:flex;border-bottom:1px solid var(--border)">${tabs.map(t=>`<button class="tab ${tab===t?'on':''}" onclick="setHabitTab('${t}')">${t}</button>`).join('')}</div>
- <div class="sheetBody">${tab==='timeline'?
- [['05:00','起床 / 藻塩レモン水'],['05:05','瞑想 5–10分'],['05:15','動的ストレッチ 10分'],['05:25','Run / HIIT ＋ クレアチン・EAA'],['06:30','プロテイン / シャワー'],['21:30','スクリーンオフ'],['22:00','入浴 38–40℃ 15–20分'],['22:20','ジャーナリング 5分'],['22:30','就寝']].map(x=>`<div class="logtop" style="padding:10px 0;border-bottom:1px solid var(--border)"><span class="logdate">${x[0]}</span><span style="font-size:12px">${x[1]}</span></div>`).join(''):
- tab==='nutrition'?
- [['起床時','藻塩レモン水 500ml'],['運動30分前','クレアチン 5g / EAA 10g'],['運動直後','EAA 10g / プロテイン 20g'],['食事基準','まごはやさしい'],['就寝前','プロテイン 20g']].map(x=>`<div class="inner"><div class="label">${x[0]}</div><div class="line">${x[1]}</div></div>`).join(''):
- tab==='hiit'?HIIT_ROUTINE.map((x,i)=>`<div class="day"><div class="dayname mono">${String(i+1).padStart(2,'0')}</div><div class="daybody">${x}</div></div>`).join(''):
- STRETCH_ROUTINE.map((x,i)=>`<div class="day"><div class="dayname mono">${String(i+1).padStart(2,'0')}</div><div class="daybody">${x}</div></div>`).join('')
- }</div></div></div>`;
+function scheduleView(){
+ return `<div class="schedule fade">
+  05:00 MEDITATION<br>
+  05:15 BREATHWORK<br>
+  05:30 RUNNING SESSION<br>
+  06:30 JOURNALING<br>
+  21:00 RECOVERY MODE<br>
+  ---<br>
+  SIMPLE & HIGH-QUALITY LIFE.
+ </div>`;
 }
 
-function plannedActivitiesForLog(){
- const i=intentionForToday();
- const all=[...(i.move||[]),...(i.mind||[]),...(i.recovery||[])].map(normalizeActivity);
- return [...new Set(all)];
-}
-function plannedPrimaryForLog(){
- const all=plannedActivitiesForLog();
- return all.find(a=>['RUN','WALK','CYCLING','SWIM','HIKE','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY'].includes(a))||all[0]||'RUN';
-}
-function quickConfirmIntention(){
- const intent=intentionForToday();
- const acts=[...(intent.move||[]),...(intent.mind||[]),...(intent.recovery||[])].map(normalizeActivity);
- const activities=[...new Set(acts)];
- if(!activities.length){alert('TODAY’S INTENTION を先にセットしてね');return}
- const existing=state.logs.findIndex(l=>l.date===todayStr());
- if(existing>=0){state.modal=null;state.editIndex=existing;state.modal='log';render();setTimeout(syncActivityFields,0);return}
- const primary=activities.find(a=>['RUN','WALK','CYCLING','SWIM','HIKE','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY'].includes(a))||activities[0]||'OTHER';
- const encounter=Math.random()<.18;
- state.logs.push({distance:'',pace:'',feeling:'',date:todayStr(),stravaUrl:'',week:curWeek(),duration:'',durationSec:'',timeHms:'',sleep:'',weight:'',avgHr:'',maxHr:'',cadence:'',elevationGain:'',activityType:primary,activities,splits:[],rpe:'',fatigue:'',mood:'',pain:'',sageEncounter:encounter,sageIndex:encounter?Math.floor(Math.random()*SAGES.length):null,healthSource:'MANUAL',quickMemory:true});
- save();state.modal=null;vibe();render();setTimeout(()=>showAfterglowMoment(state.logs.length-1),90);
-}
-function oneTapPlanHTML(edit,planned){
- if(edit)return '';
- const labels=(planned||[]).map(displayActivity);
- if(!labels.length)return '';
- const todayExists=state.logs.some(l=>l.date===todayStr());
- return `<div class="sourceLayer" style="margin-bottom:18px"><div class="logtop"><div><div class="label">ONE TAP LIVING 4.0</div><div class="mission" style="margin:2px 0 0">ALREADY PREPARED.</div></div><span class="phase">INTENTION → ACTION</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 12px">${labels.map(x=>`<span style="border:1px solid rgba(196,185,154,.18);padding:8px 10px;font:400 10px var(--mono);letter-spacing:1.5px;color:var(--white)">${x}</span>`).join('')}</div>${todayExists?`<div class="fieldGuide"><span>TODAY IS ALREADY A MEMORY</span><span>TAP LOG TO ADJUST</span></div>`:`<button class="btn primary" onclick="quickConfirmIntention()">LIVED AS PLANNED →</button><div class="fieldGuide" style="margin-top:9px"><span>ONE TAP = LIFE MEMORY</span><span>DETAILS LIVE IN MEMORY</span></div>`}</div>`;
-}
-function logModal(){
- const edit=state.editIndex!==null ? state.logs[state.editIndex] : null;
- const planned=edit?(edit.activities||[]):plannedActivitiesForLog();
- const plannedPrimary=edit?(edit.activityType||'RUN'):plannedPrimaryForLog();
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">${edit?'EDIT LIFE LOG':'LIFE LOG'}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
- <div class="field"><label>DATE</label><input id="l_date" type="date" value="${edit?.date||todayStr()}"></div>
- ${oneTapPlanHTML(edit,planned)}
- <div class="sourceLayer"><div class="logtop"><div><div class="label">ONE TAP LIVING 4.0</div><div class="mission" style="margin:2px 0 0">HUMAN FIRST · DATA SECOND</div></div>${sourceBadge(edit||{healthSource:'MANUAL'})}</div><div class="sourceGrid"><div class="sourceNode on"><span>MANUAL</span><em>NOW</em></div><div class="sourceNode"><span>APPLE HEALTH</span><em>READY</em></div><div class="sourceNode"><span>STRAVA</span><em>READY</em></div><div class="sourceNode"><span>RUNKEEPER</span><em>READY</em></div></div><div class="fieldGuide" style="margin-top:9px"><span>MACHINE = AUTO WHEN CONNECTED</span><span>YOU = INTENTION · FEELING · CONDITION</span></div></div>
- <div class="inner" style="margin:4px 0 18px"><div class="label">LIFE STACK · BODY</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px"><div class="field" style="margin:0"><label>BODY · SLEEP</label><input id="lsleep" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="${edit?.sleep?String(edit.sleep).replace(/\D/g,''):''}" placeholder="0800" oninput="this.value=this.value.replace(/\D/g,'').slice(0,4);updateSleepPreview()"><div class="fieldGuide"><span>0800 → <b id="sleepFormatted" style="font-weight:400">${edit?.sleep?normalizeSleepValue(edit.sleep):'H:MM'}</b></span><span>BODY BASE</span></div></div><div class="field" style="margin:0"><label>BODY · WEIGHT</label><input id="lweight" type="number" min="30" max="200" step=".1" value="${edit?.weight||''}" placeholder="65.0"><div class="fieldGuide"><span>KG · OPTIONAL</span><span>BODY BASE</span></div></div></div><div class="fieldGuide" style="margin-top:12px"><span id="moveModeLabel">MOVE · ACTIVITY BELOW</span><span>MIND / RECOVERY · FEELING + CONDITION</span></div></div>
- <div class="field" data-distance-field><label>DISTANCE</label><input id="ld" type="number" step=".01" value="${edit?.distance||''}" placeholder="21.1" oninput="updateAutoPaceAndSplits()"><div class="fieldGuide"><span>UNFILLED = DIM / FILLED = WHITE</span><span class="target">RACE 21.1 KM</span></div></div>
- <div class="field" data-distance-field><label>PACE · AUTO CALCULATED</label><div class="paceAutoBox"><span id="paceAutoValue" class="paceAutoValue ${edit?.pace?'':'empty'}">${edit?.pace?edit.pace+'/km':'DISTANCE + TIME'}</span><span class="paceAutoBadge">NO INPUT</span></div><div class="fieldGuide"><span>AUTO · TIME ÷ DISTANCE</span><span class="target">RACE 5:38 / KM</span></div></div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-  <div class="field" data-time-field><label>TIME · H:MM:SS</label><input id="lt" inputmode="numeric" pattern="[0-9]*" maxlength="5" value="${edit?(edit.durationSec?secToDigits(edit.durationSec):edit.duration?secToDigits(Number(edit.duration)*60):''):''}" placeholder="03402" oninput="this.value=this.value.replace(/\D/g,'').slice(0,5);updateAutoPace()"><div class="fieldGuide"><span>03402 → <b id="timeFormatted" style="font-weight:400">${edit?(edit.durationSec?secToHMS(edit.durationSec):edit.duration?secToHMS(Number(edit.duration)*60):'H:MM:SS'):'H:MM:SS'}</b></span><span class="target">RACE 1:59:00</span></div></div>
-  <div class="field"><label>AVG HR · bpm</label><input id="lhr" type="number" min="40" max="220" value="${edit?.avgHr||''}" placeholder="133"><div class="fieldGuide"><span class="optional">HEALTH SOURCE · OPTIONAL</span><span class="target">MAF GUIDE 133</span></div></div>
-  <div class="field"><label>MAX HR · bpm</label><input id="lmhr" type="number" min="40" max="230" value="${edit?.maxHr||''}" placeholder="158"><div class="fieldGuide"><span class="optional">HEALTH SOURCE · OPTIONAL</span><span>MAX HR</span></div></div>
-  <div class="field"><label>CADENCE · spm</label><input id="lcad" type="number" min="80" max="240" value="${edit?.cadence||''}" placeholder="168"><div class="fieldGuide"><span class="optional">HEALTH SOURCE · OPTIONAL</span><span>AVG CADENCE</span></div></div>
-  <div class="field"><label>ELEVATION GAIN · m</label><input id="lelev" type="number" min="0" step="1" value="${edit?.elevationGain||''}" placeholder="42"><div class="fieldGuide"><span class="optional">HEALTH SOURCE · OPTIONAL</span><span>TOTAL ASCENT</span></div></div>
-  <div class="field"><label>ACTIVITY TYPE · INTENTION PRESET</label><select id="latype" onchange="syncActivityFields()" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--border);border-radius:0;color:var(--white);font:400 15px var(--mono);padding:11px 0"><option value="RUN" ${plannedPrimary==='RUN'?'selected':''}>RUN</option><option value="WALK" ${plannedPrimary==='WALK'?'selected':''}>WALK</option><option value="CYCLING" ${plannedPrimary==='CYCLING'?'selected':''}>CYCLING</option><option value="SWIM" ${plannedPrimary==='SWIM'?'selected':''}>SWIM</option><option value="HIKE" ${plannedPrimary==='HIKE'?'selected':''}>HIKE</option><option value="STRENGTH" ${plannedPrimary==='STRENGTH'?'selected':''}>STRENGTH</option><option value="HIIT" ${plannedPrimary==='HIIT'?'selected':''}>HIIT</option><option value="YOGA" ${plannedPrimary==='YOGA'?'selected':''}>YOGA</option><option value="PILATES" ${plannedPrimary==='PILATES'?'selected':''}>PILATES</option><option value="STRETCH" ${plannedPrimary==='STRETCH'?'selected':''}>STRETCH</option><option value="MOBILITY" ${plannedPrimary==='MOBILITY'?'selected':''}>MOBILITY</option><option value="MEDITATION" ${plannedPrimary==='MEDITATION'?'selected':''}>MEDITATION / 瞑想</option><option value="MOSO" ${plannedPrimary==='MOSO'?'selected':''}>MŌSŌ</option><option value="SLEP" ${plannedPrimary==='SLEP'?'selected':''}>SLEP</option><option value="BREATHWORK" ${plannedPrimary==='BREATHWORK'?'selected':''}>BREATHWORK / 呼吸</option><option value="RECOVERY" ${plannedPrimary==='RECOVERY'?'selected':''}>RECOVERY</option><option value="REST" ${plannedPrimary==='REST'?'selected':''}>REST / 完全休養</option><option value="OTHER" ${plannedPrimary==='OTHER'?'selected':''}>OTHER</option></select><div class="fieldGuide"><span>LIFE · BODY · MIND</span><span>CHANGES RHYTHM DNA</span></div></div>
-  <div class="field"><label>LIFE STACK · ALSO TODAY</label><div class="lifeActivityGrid">${[
-    ['MOVE',['STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY']],
-    ['MIND',['MEDITATION','BREATHWORK','MOSO','SLEP']],
-    ['RECOVERY',['RECOVERY']]
-  ].map(([group,items])=>{const picked=items.filter(a=>planned.includes(a)&&plannedPrimary!==a);return `<div class="lifeStackGroup"><button type="button" class="lifeStackHead" onclick="toggleLifeStack(this)"><span class="lifeStackTitle">${group}</span><span class="lifeStackSummary">${picked.length?picked.map(displayActivity).join(' · '):'NONE'}</span><span class="lifeStackChevron">＋</span></button><div class="lifeStackOptions">${items.map(a=>`<label class="lifeActivityOption"><input type="checkbox" name="lifeActivityExtra" value="${a}" ${planned.includes(a)&&plannedPrimary!==a?'checked':''} onchange="updateLifeStackSummaries()"><span>${displayActivity(a)}</span></label>`).join('')}</div></div>`}).join('')}</div><div class="fieldGuide"><span>BODY → MOVE → MIND → RECOVERY</span><span>ONE DAY = ONE LIFE MEMORY</span></div></div>
-  <div class="field"><label>RPE · 1–10</label><input id="lrpe" type="number" min="1" max="10" value="${edit?.rpe||''}" placeholder="4"><div class="fieldGuide"><span>TODAY · SELF CHECK</span><span>1 EASY — 10 MAX</span></div></div>
-  <div class="field"><label>FATIGUE · 1–5</label><input id="lfat" type="number" min="1" max="5" value="${edit?.fatigue||''}" placeholder="2"><div class="fieldGuide"><span class="optional">OPTIONAL · SELF CHECK</span><span>1 LIGHT — 5 HEAVY</span></div></div>
-  <div class="field"><label>MOOD · 1–5</label><input id="lmood" type="number" min="1" max="5" value="${edit?.mood||''}" placeholder="3"><div class="fieldGuide"><span>TODAY · SELF CHECK</span><span>1 LOW — 5 GOOD</span></div></div>
-  <div class="field"><label>PAIN · 0–10</label><input id="lpain" type="number" min="0" max="10" value="${edit?.pain??''}" placeholder="0"><div class="fieldGuide"><span>TODAY · SELF CHECK</span><span>0 NONE — 10 STRONG</span></div></div>
- </div>
- <div class="splitBlock" data-split-field><div class="splitHead"><div><div class="splitTitle">HYBRID TRACE <span class="splitBadge">C3</span></div></div><div class="splitSub">HEALTH SOURCE → CONTINUOUS TRACE<br>PACE · HR · ELEVATION</div></div><div id="splitRows" class="splitGrid"></div><div class="splitNote">HEALTH SOURCEのSPLITを連続補間し、滑らかな大きな流れ＋細かな生命反応へ変換。PACEは 0643 → 6:43。未入力ならC3 LIVING。</div></div>
- <div class="field"><label>HUMAN LAYER · FEELING / MEMO · optional</label><textarea id="lf" rows="3" placeholder="機械には分からないことだけ。空欄でもLOGできます。">${edit?.feeling||''}</textarea><div class="fieldGuide"><span>WORDS ARE OPTIONAL</span><span>LIFE IT FIRST</span></div></div>
- <div class="field" data-strava-field><label>STRAVA URL · optional</label><input id="lu" value="${edit?.stravaUrl||''}" placeholder="https://www.strava.com/activities/..."></div>
- <div style="display:flex;gap:8px">${edit?'<button class="btn" onclick="deleteLog()">DELETE</button>':''}<button class="btn primary" onclick="addOrUpdateLog()">${edit?'UPDATE →':'LOG →'}</button></div></div></div></div>`;
+function mainView(){
+ const weeks=genWeeks(), currentWeek=getCurrentWeek();
+ const totalTasks=weeks.reduce((a,w)=>a+w.tasks.length,0);
+ const completedTasks=Object.values(state.progress).filter(Boolean).length;
+ const pct=(completedTasks/totalTasks)*100;
+ const p=PROTOCOLS[state.protocol];
+ let content=state.tab==="weeks"?weeksView(weeks,currentWeek):state.tab==="logs"?logsView():scheduleView();
+
+ return `<div class="wrap fade">
+  <header>
+    <div class="eyebrow">PROTOCOL ${state.protocol} / ACTIVE</div>
+    <h1>MRC PROTOCOL</h1>
+    <p class="mission-sub">SUB-2:00:00 MISSION / TEGANUMA 2026</p>
+    <div class="protocol-title">${p.title}</div>
+  </header>
+
+  <div class="card today-card">
+    <div class="label">TODAY'S MISSION</div>
+    <div class="mono">05:30 / MORNING RUN<br>ZONE 2 / 8km</div>
+    <div class="quote">"${p.quote}"</div>
+  </div>
+
+  ${weatherProtocol()}
+  ${sessionCard()}
+
+  <div class="navrow">
+   <div class="tabs">
+    ${["weeks","logs","schedule"].map(t=>`<button class="tab-btn ${state.tab===t?"active":""}" onclick="setTab('${t}')">${t.toUpperCase()}</button>`).join("")}
+   </div>
+   ${progressCircle(pct)}
+  </div>
+
+  ${content}
+
+  <footer>
+    <div class="footer1">FOR THE ONES BEHIND YOU</div>
+    <div class="footer2">© 2026 MŌSŌ RUNNING CLUB / omoiyari.shikumi</div>
+  </footer>
+ </div>`;
 }
 
-function historyModal(){
- const log=state.viewIndex!==null?state.logs[state.viewIndex]:null;
- if(!log)return '';
- const time=log.timeHms||(log.durationSec?secToHMS(log.durationSec):log.duration?secToHMS(Number(log.duration)*60):'—');
- const rhythmHr=log.avgHr?`${log.avgHr} BPM · REAL`:'MRC RHYTHM';
- const rhythmLog=historyRhythmLog(log);
- const source=(Array.isArray(log.splits)&&log.splits.length)?'HEALTH SPLIT':'C3 LIVING';
- const healthSource=displaySource(log.healthSource||'MANUAL');
- const acts=(log.activities&&log.activities.length?log.activities:[log.activityType||'RUN']).map(normalizeActivity);
- const distanceSet=['RUN','WALK','CYCLING','SWIM','HIKE'];
- const hasDistanceActivity=acts.some(a=>distanceSet.includes(a));
- const moveSet=['RUN','WALK','CYCLING','SWIM','HIKE','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY'];
- const mindSet=['MEDITATION','BREATHWORK','MOSO','SLEP'];
- const recoverySet=['RECOVERY','REST'];
- const moveActs=acts.filter(a=>moveSet.includes(a)).map(displayActivity);
- const mindActs=acts.filter(a=>mindSet.includes(a)).map(displayActivity);
- const recoveryActs=acts.filter(a=>recoverySet.includes(a)).map(displayActivity);
- const bodyParts=[]; if(log.sleep)bodyParts.push(normalizeSleepValue(log.sleep)+' H'); if(log.weight)bodyParts.push(log.weight+' KG');
- const lifeLine=`<div class="lifeLine"><div class="lifeLineTitle">LIFE STACK · LIVING LINE</div>${[['BODY',bodyParts],['MOVE',moveActs],['MIND',mindActs],['RECOVERY',recoveryActs]].map(([k,v])=>`<div class="lifeLineRow ${v.length?'on':''}"><div class="lifeLineRail"><i class="lifeLineDot"></i></div><div class="lifeLineKey">${k}</div><div class="lifeLineVal">${v.length?v.join(' · '):'—'}</div></div>`).join('')}</div>`;
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">LIFE MEMORY · ${log.date}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
- <div class="label">LIVING TRACE · FULL LIVING C3</div>${livingRhythm(rhythmLog)}<div class="traceStatus">BODY = <b>BASE</b> · MOVE = <b>FLOW</b> · MIND = <b>BREATH</b> · RECOVERY = <b>CALM</b> · SOURCE = <b>${source}</b></div>
- ${lifeLine}
- ${memoryLinkedSeedsHTML(log)}
- <div class="historyMeta"><div><small>SOURCE</small><b>${healthSource}</b></div><div><small>SLEEP</small><b>${log.sleep?normalizeSleepValue(log.sleep)+' H':'—'}</b></div><div><small>WEIGHT</small><b>${log.weight?log.weight+' KG':'—'}</b></div><div><small>DISTANCE</small><b>${log.distance?log.distance+' KM':'—'}</b></div><div><small>TIME</small><b>${time}</b></div><div><small>PACE</small><b>${log.pace?log.pace+'/KM':'—'}</b></div><div><small>RHYTHM</small><b>${rhythmHr}</b></div><div><small>ACTIVITY</small><b>${(log.activities&&log.activities.length?log.activities:[log.activityType||'RUN']).map(a=>displayActivity(a)).join(' + ')}</b></div><div><small>MAX HR</small><b>${log.maxHr||'—'}</b></div><div><small>CADENCE</small><b>${log.cadence?log.cadence+' SPM':'—'}</b></div><div><small>ELEVATION</small><b>${log.elevationGain?log.elevationGain+' M':'—'}</b></div><div><small>RPE</small><b>${log.rpe||'—'}</b></div><div><small>FATIGUE</small><b>${log.fatigue||'—'}</b></div><div><small>MOOD</small><b>${log.mood||'—'}</b></div><div><small>PAIN</small><b>${log.pain!==''&&log.pain!=null?log.pain:'—'}</b></div></div>
- ${(hasDistanceActivity&&Array.isArray(rhythmLog.splits)&&rhythmLog.splits.length)?`<div class="splitHistory"><div class="splitHistoryRow" style="color:rgba(196,185,154,.58)"><span>SPLIT</span><span>PACE</span><span>HR</span><span>+M</span></div>${rhythmLog.splits.map((sp,i)=>`<div class="splitHistoryRow"><span>${i+1}K</span><b>${sp.pace?sp.pace+'/KM':'—'}</b><b>${sp.hr||'—'}</b><b>${sp.elevation!==''&&sp.elevation!=null?sp.elevation:'—'}</b></div>`).join('')}</div>`:''}
- <div class="historyNote">${log.feeling||'—'}</div>
- ${log.stravaUrl?`<a class="strava" target="_blank" href="${log.stravaUrl}" style="display:block;margin-top:12px">STRAVA →</a>`:''}
- <button class="btn primary" onclick="editFromHistory()">ADD / EDIT DETAILS →</button>
- <div class="fieldGuide" style="margin-top:9px"><span>MEMORY FIRST</span><span>DETAILS CAN WAIT</span></div>
- <div class="wmeta" style="margin-top:10px;text-align:center">FULL LIVING TRACE · BODY + MOVE + MIND + RECOVERY · SOURCE ${healthSource}</div>
- </div></div></div>`;
+function render(){
+ document.getElementById("app").innerHTML=state.protocol?mainView():selectScreen();
 }
-
-function sageModal(){
- const log=state.encounterIndex!==null?state.logs[state.encounterIndex]:latestTodayLog();
- const s=sageForLog(log);
- return `<div class="modal" onclick="closeModal()"><div class="sheet" onclick="event.stopPropagation()"><div class="sheetHead"><span class="eyebrow">SAGE ENCOUNTER</span><button class="close" onclick="closeModal()">×</button></div><div class="sagebox"><div class="sageMark">${s[0]}</div><div class="phase">${s[1]}</div><div class="sub" style="margin-bottom:18px">${s[2]}</div><div class="sageText">${s[3]}</div><button class="btn primary" onclick="closeModal()">RETURN TO RHYTHM</button><div class="wmeta" style="margin-top:12px">18% REACTION · prototype response / AI connection follows</div></div></div></div>`;
-}
-
-function memoryLinkedSeedsHTML(log){
- if(!log)return '';
- const planted=loadPlantedSeeds();
- const primary=loadMosoSeed();
- const seeds=[{seed:primary,primary:true}].concat(Object.entries(planted).filter(([d])=>d!==primary.date).map(([d,v])=>({seed:{...DEFAULT_MOSO_SEED,date:d,...v},primary:false})));
- const linked=seeds.filter(({seed})=>{
-   const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
-   const growthStart=(text.includes('SLEP')||text.includes('英語'))?(seed.date||RACE_KEY):START_KEY;
-   const growthEnd=seed.date||RACE_KEY;
-   return log.date>=growthStart&&log.date<=growthEnd&&seedRelevant(log,seed);
- });
- if(!linked.length)return '';
- const rows=linked.map(({seed,primary})=>{const g=seedGrowth(seed);const click=primary?`openMosoSeed()`:`openMosoSeed('${seed.date}')`;return `<button class="memorySeedItem" onclick="${click}"><span class="memorySeedMoso">${esc(seed.moso||'UNTITLED SEED')}</span><span class="memorySeedStage">${g.stage} →</span></button>`}).join('');
- return `<div class="memorySeedLink"><div class="memorySeedHead"><span class="memorySeedTitle">SEEDS THIS LIFE MEMORY GROWS</span><span class="memorySeedCount">${linked.length} SEED${linked.length===1?'':'S'}</span></div>${rows}</div>`;
-}
-
-function seedLinkedMemoriesHTML(seed){
- const realityDay=seed?.date||RACE_KEY,today=todayStr();
- const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
- const growthStart=(text.includes('SLEP')||text.includes('英語'))?realityDay:START_KEY;
- const growthEnd=today<realityDay?today:realityDay;
- const hits=(state.logs||[]).map((l,i)=>({l,i})).filter(x=>x.l&&x.l.date>=growthStart&&x.l.date<=growthEnd&&seedRelevant(x.l,seed)).sort((a,b)=>String(b.l.date).localeCompare(String(a.l.date)));
- const rows=hits.map(({l,i})=>{
-   const acts=(l.activities&&l.activities.length?l.activities:[l.activityType||'RUN']).map(displayActivity).join(' · ');
-   return `<button class="seedMemoryItem" onclick="state.historyIndex=${i};state.modal='history';vibe();render()"><span class="seedMemoryDate">${esc(l.date.slice(5).replace('-','/'))}</span><span class="seedMemoryAct">${esc(acts)}</span><span class="seedMemoryArrow">→</span></button>`;
- }).join('');
- return `<div class="seedMemoryLink"><div class="seedMemoryLinkHead"><span class="seedMemoryLinkTitle">LIFE MEMORIES THAT GROW THIS SEED</span><span class="seedMemoryLinkCount">${hits.length} MEMORY${hits.length===1?'':'IES'}</span></div>${rows||'<div class="seedMemoryEmpty">まだ、この未来を育てたLIFE MEMORYはありません。</div>'}</div>`;
-}
-
-function mosoSeedModal(){
- const selectedDate=state.seedDate||null;
- const planted=loadPlantedSeeds();
- const seed=selectedDate?({...DEFAULT_MOSO_SEED,date:selectedDate,...(planted[selectedDate]||{})}):loadMosoSeed();
- const eyebrow=selectedDate?`MŌSŌ · SEED · ${selectedDate}`:'MŌSŌ · SEED';
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">${eyebrow}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
- <div class="label">未来に、ひとつの種を植える。</div><div class="mission" style="margin:8px 0 14px">MŌSŌ → LIFE MEMORY → REALITY</div>${seedGrowthTrackHTML(seed)}
- ${seedLinkedMemoriesHTML(seed)}
- <div class="field"><label>MŌSŌ</label><input id="seedMoso" value="${esc(seed.moso)}" placeholder="ハーフ2時間を切る"></div>
- <div class="field"><label>WHY</label><textarea id="seedWhy" rows="3" placeholder="なぜ、この未来を生きたい？">${esc(seed.why)}</textarea></div>
- <div class="field"><label>REALITY DAY</label><input id="seedDate" type="date" value="${esc(seed.date)}"></div>
- <div class="field"><label>DESTINATION</label><input id="seedDestination" value="${esc(seed.destination)}" placeholder="TEGA HALF"></div>
- <div class="field"><label>TARGET</label><textarea id="seedTarget" class="seedTargetText" rows="2" placeholder="1:59:00">${esc(seed.target)}</textarea></div>
- <button class="btn primary" onclick="saveMosoSeed()">PLANT THIS SEED →</button>
- <div class="fieldGuide"><span>${selectedDate?'THIS DAY · ONE SEED':'ONE SEED · ONE REALITY'}</span><span>TRACE = LIFE MEMORY</span></div></div></div></div>`;
-}
-function saveMosoSeed(){
- const date=document.getElementById('seedDate')?.value||RACE_KEY;
- const v={moso:document.getElementById('seedMoso')?.value.trim()||DEFAULT_MOSO_SEED.moso,why:document.getElementById('seedWhy')?.value.trim()||'',date,destination:document.getElementById('seedDestination')?.value.trim()||'REALITY',target:document.getElementById('seedTarget')?.value.trim()||''};
- if(state.seedDate){
-   const all=loadPlantedSeeds();
-   if(state.seedDate!==date)delete all[state.seedDate];
-   all[date]=v;savePlantedSeeds(all);
- }else{
-   saveMosoSeedData(v);
- }
- state.seedDate=null;state.modal=null;vibe();render();
-}
-
-function modal(){
- if(state.modal==='log')return logModal();
- if(state.modal==='habits')return habitsModal();
- if(state.modal==='history')return historyModal();
- if(state.modal==='sage')return sageModal();
- if(state.modal==='intention')return intentionModal();
- if(state.modal==='mososeed')return mosoSeedModal();
- return '';
-}
-
-function main(){
- const body=state.tab==='today'?today():state.tab==='weeks'?weeks():state.tab==='schedule'?schedule():state.tab==='pace'?pace():state.tab==='memory'?memoryCalendar():logs();
- return `<div class="wrap">${header()}${tabs()}${body}${modal()}</div>`;
-}
-function render(){document.getElementById('app').innerHTML=state.type?main():onboarding();if(state.modal==='log'){const edit=state.editIndex!==null?state.logs[state.editIndex]:null;setTimeout(()=>{renderSplitInputs(edit?.splits||[]);syncActivityFields()},0)}if(state.type&&state.logs.some(l=>l.date===todayStr()))setTimeout(ensureTodayWeather,0);if(state.type)setTimeout(ensureHistoryWeather,150)}
-// Official C3 LIVING TRACE
 render();
 </script>
-
-
-
-
 </body>
 </html>
