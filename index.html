@@ -256,7 +256,7 @@ button,input,textarea{font:inherit}button{-webkit-tap-highlight-color:transparen
 .todayLogHeading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:8px}.todayLogTitle{font:300 9px var(--serif);letter-spacing:2.5px;color:var(--muted)}.todayWeather{font:400 8.5px var(--mono);letter-spacing:1.2px;color:rgba(245,240,232,.72);white-space:nowrap}.todayWeather.pending{color:rgba(139,133,112,.42)}@media(max-width:390px){.todayLogHeading{align-items:flex-start}.todayLogTitle{letter-spacing:2px}.todayWeather{font-size:8px;letter-spacing:.8px}}
 </style>
 
-<!-- MRC v27 TRUE ONE TAP · MEMORY FIRST -->
+<!-- MRC v31 SEED FOREST · INDEPENDENT SEEDS -->
 </head>
 <body>
 <div id="app"></div>
@@ -269,10 +269,11 @@ const START=new Date(2026,8,1),RACE_DAY=new Date(2026,9,25);
 const TOTAL_DAYS=55;
 const MOSO_SEED_KEY='mrc_moso_seed_v1';
 const PLANTED_SEEDS_KEY='mrc_planted_seeds_v1';
-const DEFAULT_MOSO_SEED={moso:'ハーフ2時間を切る',why:'もう一度、走れる身体を取り戻す',date:RACE_KEY,target:'1:59:00',destination:'TEGA HALF'};
-function loadMosoSeed(){try{return {...DEFAULT_MOSO_SEED,...(JSON.parse(localStorage.getItem(MOSO_SEED_KEY)||'{}')||{})}}catch{return {...DEFAULT_MOSO_SEED}}}
-function saveMosoSeedData(v){localStorage.setItem(MOSO_SEED_KEY,JSON.stringify(v))}
-function loadPlantedSeeds(){try{return JSON.parse(localStorage.getItem(PLANTED_SEEDS_KEY)||'{}')||{}}catch{return {}}}
+const DEFAULT_MOSO_SEED={id:'mrc-half-2026',kind:'MRC',moso:'ハーフ2時間を切る',why:'もう一度、走れる身体を取り戻す',date:RACE_KEY,target:'1:59:00',destination:'TEGA HALF'};
+const DEFAULT_SLEP_SEED={id:'slep-2026-09-18',kind:'SLEP',moso:'英語を身につける',why:'英語を日常にする',date:'2026-09-18',target:'SLEP START',destination:'SLEP'};
+function loadMosoSeed(){try{const x={...DEFAULT_MOSO_SEED,...(JSON.parse(localStorage.getItem(MOSO_SEED_KEY)||'{}')||{})};if((String(x.moso).includes('ハーフ')||String(x.destination).includes('TEGA'))&&x.date==='2026-09-18'){x.date=RACE_KEY;saveMosoSeedData(x)}return x}catch{return {...DEFAULT_MOSO_SEED}}}
+function saveMosoSeedData(v){localStorage.setItem(MOSO_SEED_KEY,JSON.stringify({...v,id:'mrc-half-2026',kind:'MRC'}))}
+function loadPlantedSeeds(){try{let raw=JSON.parse(localStorage.getItem(PLANTED_SEEDS_KEY)||'{}')||{};let out={};Object.entries(raw).forEach(([k,v])=>{if(!v)return;const seed={...v,id:v.id||((v.kind||'seed').toLowerCase()+'-'+(v.date||k)),date:v.date||(/^\d{4}-\d{2}-\d{2}$/.test(k)?k:'')};out[seed.id]=seed});const hasSlep=Object.values(out).some(v=>String(v?.kind||'').toUpperCase()==='SLEP'||/SLEP|英語/i.test(`${v?.moso||''} ${v?.destination||''}`));if(!hasSlep)out[DEFAULT_SLEP_SEED.id]={...DEFAULT_SLEP_SEED};Object.keys(out).forEach(k=>{const v=out[k];if(v?.date==='2026-09-18'&&(String(v.moso||'').includes('ハーフ')||String(v.destination||'').includes('TEGA')))delete out[k]});localStorage.setItem(PLANTED_SEEDS_KEY,JSON.stringify(out));return out}catch{return {[DEFAULT_SLEP_SEED.id]:{...DEFAULT_SLEP_SEED}}}}
 function savePlantedSeeds(v){localStorage.setItem(PLANTED_SEEDS_KEY,JSON.stringify(v||{}))}
 function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c))}
 function seedDays(){const x=loadMosoSeed();return Math.max(0,Math.ceil((keyToUTC(x.date)-keyToUTC(todayStr()))/86400000))}
@@ -476,7 +477,7 @@ function intentionForToday(){
 
 function allSeeds(){
  const primary=loadMosoSeed(),planted=loadPlantedSeeds();
- return [{seed:primary,primary:true}].concat(Object.entries(planted).filter(([d])=>d!==primary.date).map(([d,v])=>({seed:{...DEFAULT_MOSO_SEED,date:d,...v},primary:false})));
+ return [{seed:primary,primary:true}].concat(Object.entries(planted).filter(([id,v])=>v&&v.id!==primary.id).map(([id,v])=>({seed:{...v,id:v.id||id},primary:false})));
 }
 function seedMatchesActivities(seed,activities){
  const acts=(activities||[]).map(normalizeActivity);
@@ -1178,18 +1179,18 @@ function seedForestHTML(){
   const primary=loadMosoSeed();
   const planted=loadPlantedSeeds();
   const rows=[{...primary,_primary:true}];
-  Object.keys(planted).sort().forEach(date=>{
-   const s=planted[date];
+  Object.keys(planted).sort().forEach(id=>{
+   const s=planted[id];
    if(!s)return;
-   const duplicate=date===primary.date && String(s.moso||'')===String(primary.moso||'');
-   if(!duplicate)rows.push({...s,date,_primary:false});
+   const duplicate=s.id===primary.id || (s.date===primary.date && String(s.moso||'')===String(primary.moso||''));
+   if(!duplicate)rows.push({...s,_seedId:id,_primary:false});
   });
   rows.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
   const itemHTML=rows.map(s=>{
    const g=seedGrowth(s);
    const date=esc(s.date||'');
    const dateShort=date ? date.slice(5).replace('-','/') : '—';
-   const click=s._primary ? "openMosoSeed()" : `openMosoSeed('${date}')`;
+   const click=s._primary ? "openMosoSeed()" : `openMosoSeed('${esc(s._seedId||s.id)}')`;
    return `<button class="seedForestItem" onclick="${click}">
     <span class="seedForestVisual">${seedVisualHTML(s)}</span>
     <span class="seedForestDate">${dateShort}</span>
@@ -1230,7 +1231,7 @@ function memoryCalendar(){
    const remaining=Math.max(0,Math.ceil((endMs-todayMs)/86400000));
    const mini=(log)=>{try{return `<svg class="miniTrace" viewBox="0 0 100 24"><path d="${memoryMiniPath(log)}"/></svg>`}catch(e){return '<span class="seedDot"></span>'}};
    const weather=(log)=>{try{const w=log?.weather;return w?`<span class="weatherMini">${weatherGlyph(w.code)}</span>`:''}catch(e){return ''}};
-   return `<div class="content"><div class="memoryHero"><div class="label">LIFE MEMORY · SEED → REALITY</div><div class="memoryJourney"><div class="big">${moso}</div><div class="small">${lived} MEMORIES<br>${lived} / ${days.length} DAYS LIVED · ${pct}%</div></div><div class="memoryStrip"><div class="memoryStripTitle">LIVING TRACE · OCT 25</div><div class="memoryTraceLine">${days.map(x=>`<span class="memoryTraceNode ${byDate[x.date]?'lived ':''}${x.date===safeToday?'today':''}"></span>`).join('')}</div></div></div>${seedForestHTML()}<div class="inner"><div class="logtop"><div><div class="label">55 DAYS OF LIFE</div><div class="mission">一日ひとつの、生きた痕跡。</div></div><span class="phase">${remaining} DAYS →</span></div><div class="memoryGrid">${['SUN','MON','TUE','WED','THU','FRI','SAT'].map(x=>`<div class="memoryDow">${x}</div>`).join('')}${cells.map(x=>{if(!x)return '<div class="memoryCell blank"></div>';const hit=byDate[x.date],future=x.date>safeToday;const plantedSeed=planted[x.date];return `<div class="memoryCell ${hit?'lived ':''}${future?'future ':''}${plantedSeed?'planted ':''}${x.date===safeToday?'today':''}" ${hit?`onclick="openHistory(${hit.i})"`:future?`onclick="openMosoSeed('${x.date}')"`:''}><span class="d">${x.day}</span>${hit?mini(hit.l):(plantedSeed?seedGrowthHTML(plantedSeed):'<span class="seedDot"></span>')}${hit?weather(hit.l):''}</div>`}).join('')}</div><div class="memoryLegend"><span>● SEED / FUTURE</span><span>TRACE = LIFE MEMORY</span><span>□ TODAY</span></div></div><div class="inner"><div class="label">WHY</div><div class="line">${why}</div><div class="fieldGuide" style="margin-top:12px"><span>THE DAYS ARE THE REALITY.</span><span>${destination} · ${target}</span></div></div></div>`;
+   return `<div class="content"><div class="memoryHero"><div class="label">LIFE MEMORY · SEED → REALITY</div><div class="memoryJourney"><div class="big">${moso}</div><div class="small">${lived} MEMORIES<br>${lived} / ${days.length} DAYS LIVED · ${pct}%</div></div><div class="memoryStrip"><div class="memoryStripTitle">LIVING TRACE · OCT 25</div><div class="memoryTraceLine">${days.map(x=>`<span class="memoryTraceNode ${byDate[x.date]?'lived ':''}${x.date===safeToday?'today':''}"></span>`).join('')}</div></div></div>${seedForestHTML()}<div class="inner"><div class="logtop"><div><div class="label">55 DAYS OF LIFE</div><div class="mission">一日ひとつの、生きた痕跡。</div></div><span class="phase">${remaining} DAYS →</span></div><div class="memoryGrid">${['SUN','MON','TUE','WED','THU','FRI','SAT'].map(x=>`<div class="memoryDow">${x}</div>`).join('')}${cells.map(x=>{if(!x)return '<div class="memoryCell blank"></div>';const hit=byDate[x.date],future=x.date>safeToday;const plantedSeed=Object.values(planted).find(v=>v&&v.date===x.date);return `<div class="memoryCell ${hit?'lived ':''}${future?'future ':''}${plantedSeed?'planted ':''}${x.date===safeToday?'today':''}" ${hit?`onclick="openHistory(${hit.i})"`:future?`onclick="openMosoSeed('${plantedSeed?.id||x.date}')"`:''}><span class="d">${x.day}</span>${hit?mini(hit.l):(plantedSeed?seedGrowthHTML(plantedSeed):'<span class="seedDot"></span>')}${hit?weather(hit.l):''}</div>`}).join('')}</div><div class="memoryLegend"><span>● SEED / FUTURE</span><span>TRACE = LIFE MEMORY</span><span>□ TODAY</span></div></div><div class="inner"><div class="label">WHY</div><div class="line">${why}</div><div class="fieldGuide" style="margin-top:12px"><span>THE DAYS ARE THE REALITY.</span><span>${destination} · ${target}</span></div></div></div>`;
  }catch(err){
    console.error('MEMORY stable fallback',err);
    return `<div class="content"><div class="inner" style="margin-top:0"><div class="label">LIFE MEMORY · SEED → REALITY</div><div class="title">ハーフ2時間を切る</div><div class="sub">MEMORY IS STILL ALIVE.</div></div><div class="inner"><div class="label">55 DAYS OF LIFE</div><div class="line">9/1 → 10/25</div><div class="sub">記録は保持されています。MEMORY表示の一部だけを安全に待機しています。</div></div></div>`;
@@ -1362,7 +1363,7 @@ function memoryLinkedSeedsHTML(log){
  if(!log)return '';
  const planted=loadPlantedSeeds();
  const primary=loadMosoSeed();
- const seeds=[{seed:primary,primary:true}].concat(Object.entries(planted).filter(([d])=>d!==primary.date).map(([d,v])=>({seed:{...DEFAULT_MOSO_SEED,date:d,...v},primary:false})));
+ const seeds=[{seed:primary,primary:true}].concat(Object.entries(planted).filter(([id,v])=>v&&v.id!==primary.id).map(([id,v])=>({seed:{...v,id:v.id||id},primary:false})));
  const linked=seeds.filter(({seed})=>{
    const text=`${seed?.moso||''} ${seed?.why||''} ${seed?.destination||''} ${seed?.target||''}`.toUpperCase();
    const growthStart=(text.includes('SLEP')||text.includes('英語'))?(seed.date||RACE_KEY):START_KEY;
@@ -1370,7 +1371,7 @@ function memoryLinkedSeedsHTML(log){
    return log.date>=growthStart&&log.date<=growthEnd&&seedRelevant(log,seed);
  });
  if(!linked.length)return '';
- const rows=linked.map(({seed,primary})=>{const g=seedGrowth(seed);const click=primary?`openMosoSeed()`:`openMosoSeed('${seed.date}')`;return `<button class="memorySeedItem" onclick="${click}"><span class="memorySeedMoso">${esc(seed.moso||'UNTITLED SEED')}</span><span class="memorySeedStage">${g.stage} →</span></button>`}).join('');
+ const rows=linked.map(({seed,primary})=>{const g=seedGrowth(seed);const click=primary?`openMosoSeed()`:`openMosoSeed('${seed.id}')`;return `<button class="memorySeedItem" onclick="${click}"><span class="memorySeedMoso">${esc(seed.moso||'UNTITLED SEED')}</span><span class="memorySeedStage">${g.stage} →</span></button>`}).join('');
  return `<div class="memorySeedLink"><div class="memorySeedHead"><span class="memorySeedTitle">SEEDS THIS LIFE MEMORY GROWS</span><span class="memorySeedCount">${linked.length} SEED${linked.length===1?'':'S'}</span></div>${rows}</div>`;
 }
 
@@ -1388,10 +1389,12 @@ function seedLinkedMemoriesHTML(seed){
 }
 
 function mosoSeedModal(){
- const selectedDate=state.seedDate||null;
+ const selectedId=state.seedDate||null;
  const planted=loadPlantedSeeds();
- const seed=selectedDate?({...DEFAULT_MOSO_SEED,date:selectedDate,...(planted[selectedDate]||{})}):loadMosoSeed();
- const eyebrow=selectedDate?`MŌSŌ · SEED · ${selectedDate}`:'MŌSŌ · SEED';
+ const selectedExisting=selectedId&&planted[selectedId];
+ const isDateSlot=selectedId&&/^\d{4}-\d{2}-\d{2}$/.test(selectedId)&&!selectedExisting;
+ const seed=selectedId?(selectedExisting?{...selectedExisting}:{id:'seed-'+selectedId,kind:'LIFE',moso:'',why:'',date:selectedId,destination:'',target:''}):loadMosoSeed();
+ const eyebrow=selectedId?`MŌSŌ · SEED · ${seed.date}`:'MŌSŌ · SEED';
  return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">${eyebrow}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
  <div class="label">未来に、ひとつの種を植える。</div><div class="mission" style="margin:8px 0 14px">MŌSŌ → LIFE MEMORY → REALITY</div>${seedGrowthTrackHTML(seed)}
  ${seedLinkedMemoriesHTML(seed)}
@@ -1401,17 +1404,19 @@ function mosoSeedModal(){
  <div class="field"><label>DESTINATION</label><input id="seedDestination" value="${esc(seed.destination)}" placeholder="TEGA HALF"></div>
  <div class="field"><label>TARGET</label><textarea id="seedTarget" class="seedTargetText" rows="2" placeholder="1:59:00">${esc(seed.target)}</textarea></div>
  <button class="btn primary" onclick="saveMosoSeed()">PLANT THIS SEED →</button>
- <div class="fieldGuide"><span>${selectedDate?'THIS DAY · ONE SEED':'ONE SEED · ONE REALITY'}</span><span>TRACE = LIFE MEMORY</span></div></div></div></div>`;
+ <div class="fieldGuide"><span>${selectedId?'INDEPENDENT SEED':'PRIMARY MRC SEED'}</span><span>TRACE = LIFE MEMORY</span></div></div></div></div>`;
 }
 function saveMosoSeed(){
  const date=document.getElementById('seedDate')?.value||RACE_KEY;
  const v={moso:document.getElementById('seedMoso')?.value.trim()||DEFAULT_MOSO_SEED.moso,why:document.getElementById('seedWhy')?.value.trim()||'',date,destination:document.getElementById('seedDestination')?.value.trim()||'REALITY',target:document.getElementById('seedTarget')?.value.trim()||''};
  if(state.seedDate){
    const all=loadPlantedSeeds();
-   if(state.seedDate!==date)delete all[state.seedDate];
-   all[date]=v;savePlantedSeeds(all);
+   const old=all[state.seedDate];
+   const id=old?.id||(/^\d{4}-\d{2}-\d{2}$/.test(state.seedDate)?`seed-${date}`:state.seedDate);
+   if(old)delete all[state.seedDate];
+   all[id]={...v,id,kind:old?.kind||(/SLEP|英語/i.test(`${v.moso} ${v.destination}`)?'SLEP':'LIFE')};savePlantedSeeds(all);
  }else{
-   saveMosoSeedData(v);
+   saveMosoSeedData({...v,id:'mrc-half-2026',kind:'MRC'});
  }
  state.seedDate=null;state.modal=null;vibe();render();
 }
