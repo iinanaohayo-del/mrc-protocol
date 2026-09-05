@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v32</title>
+<title>MRC Protocol v33</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -1006,7 +1006,7 @@ function openAfterglowDetails(i){
 function showGrowthMoment(){
  const old=document.getElementById('growthMoment');if(old)old.remove();
  const el=document.createElement('div');el.id='growthMoment';el.className='growthMoment';
- el.innerHTML='<div class="growthMomentInner"><div class="growthMomentLine"></div><div class="growthMomentText">TODAY GREW THIS SEED.</div><div class="growthMomentSub">ACTION → MEMORY → GROWTH</div></div>';
+ el.innerHTML='<div class="growthMomentInner"><div class="growthMomentLine"></div><div class="growthMomentText">TODAY NOURISHED THIS SEED.</div><div class="growthMomentSub">ACTION → LIFE MEMORY → GROWTH</div></div>';
  document.body.appendChild(el);
  setTimeout(()=>el.remove(),2400);
 }
@@ -1117,7 +1117,7 @@ function today(){
 
  return `<div class="content"><div class="card"><div class="cardhead"><span class="eyebrow">TODAY — ${todayMD()} ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]}</span><span class="muted mono">W${String(w).padStart(2,'0')} · ${wDates(w)}</span></div>
  <div class="cardbody"><div class="phase">${gPhase(w)[0]}</div><div class="title">${wd.th}</div><div class="sub">${wd.sb}</div>
- <div class="inner"><div class="label">TODAY'S MISSION</div><div class="mission">${day[2]}</div><div class="line">${detail}</div></div>
+ <div class="inner"><div class="label">TODAY'S MISSION</div><div class="mission">${day[2]}</div><div class="line">${detail}</div>${intentionGrowsHTML(intentionForToday(),true,"TODAY'S NOURISHMENT · 今日の養分 → SEED")}</div>
  ${livingRhythm(todays.length?todays[todays.length-1]:null)}
  ${todayLifeStack(todays)}
  ${todays.length?`<div class="inner"><div class="todayLogHeading"><div class="todayLogTitle">TODAY'S LIFE LOG · ${todayMD()} ${['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()]}</div>${weatherBadge()}</div>${todays.map((l,i)=>`<div class="logitem" onclick="openLog(${state.logs.indexOf(l)})"><div class="logtop"><span class="logkm">${displayActivity(l.activityType||'RUN')}${l.distance?` · ${l.distance}km`:''}${l.pace?` · ${l.pace}/km`:''}${l.durationSec?` · ${secToHMS(l.durationSec)}`:''}${l.avgHr?` · ♥ ${l.avgHr}`:""}</span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><span class="feel">${l.feeling}</span>${logWeatherBadge(l)}${sourceBadge(l)}</span></div>${l.stravaUrl?`<a class="strava" target="_blank" onclick="event.stopPropagation()" href="${l.stravaUrl}">STRAVA →</a>`:''}</div>`).join('')}</div>`:''}
@@ -1374,7 +1374,7 @@ function memoryLinkedSeedsHTML(log){
  });
  if(!linked.length)return '';
  const rows=linked.map(({seed,primary})=>{const g=seedGrowth(seed);const click=primary?`openMosoSeed()`:`openMosoSeed('${seed.id}')`;return `<button class="memorySeedItem" onclick="${click}"><span class="memorySeedMoso">${esc(seed.moso||'UNTITLED SEED')}</span><span class="memorySeedStage">${g.stage} →</span></button>`}).join('');
- return `<div class="memorySeedLink"><div class="memorySeedHead"><span class="memorySeedTitle">SEEDS THIS LIFE MEMORY GROWS</span><span class="memorySeedCount">${linked.length} SEED${linked.length===1?'':'S'}</span></div>${rows}</div>`;
+ return `<div class="memorySeedLink"><div class="memorySeedHead"><span class="memorySeedTitle">SEEDS NOURISHED BY THIS LIFE MEMORY</span><span class="memorySeedCount">${linked.length} SEED${linked.length===1?'':'S'}</span></div>${rows}</div>`;
 }
 
 function seedLinkedMemoriesHTML(seed){
