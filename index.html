@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v33</title>
+<title>MRC Protocol v35</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -185,6 +185,30 @@ button,input,textarea{font:inherit}button{-webkit-tap-highlight-color:transparen
 .growthMomentSub{margin-top:10px;font:400 9px var(--mono);letter-spacing:.24em;color:rgba(214,203,166,.28)}
 @keyframes growthMomentFade{0%{opacity:0}18%{opacity:1}72%{opacity:1}100%{opacity:0}}
 @keyframes growthMomentRise{0%{opacity:0;transform:translateY(7px)}20%{opacity:1;transform:translateY(0)}76%{opacity:1}100%{opacity:0;transform:translateY(-3px)}}
+
+/* v34 · GROWTH MOTION */
+@keyframes nourishmentTravel{
+  0%{transform:translateX(-12px) scale(.72);opacity:0}
+  20%{opacity:.95}
+  72%{opacity:.9}
+  100%{transform:translateX(72px) scale(.35);opacity:0}
+}
+@keyframes seedReceive{
+  0%,100%{box-shadow:0 0 0 rgba(214,202,151,0)}
+  45%{box-shadow:0 0 18px rgba(214,202,151,.42)}
+}
+.growthMoment.v34-growth .growthMomentText::before{
+  content:"";
+  display:inline-block;
+  width:5px;height:5px;border-radius:50%;
+  margin:0 13px 2px 0;
+  background:currentColor;
+  animation:nourishmentTravel 1.65s ease-in-out 1;
+}
+.growthMoment.v34-growth{
+  animation:seedReceive 1.9s ease-out 1;
+}
+
 </style>
 
 
@@ -1006,7 +1030,7 @@ function openAfterglowDetails(i){
 function showGrowthMoment(){
  const old=document.getElementById('growthMoment');if(old)old.remove();
  const el=document.createElement('div');el.id='growthMoment';el.className='growthMoment';
- el.innerHTML='<div class="growthMomentInner"><div class="growthMomentLine"></div><div class="growthMomentText">TODAY NOURISHED THIS SEED.</div><div class="growthMomentSub">ACTION → LIFE MEMORY → GROWTH</div></div>';
+ el.innerHTML='<div class="growthMomentInner"><div class="growthMomentLine"></div><div class="growthMomentText">TODAY NOURISHED THIS SEED.</div><div class="growthMomentSub">ACTION → LIFE MEMORY → NOURISHMENT → GROWTH</div></div>';
  document.body.appendChild(el);
  setTimeout(()=>el.remove(),2400);
 }
@@ -1090,13 +1114,13 @@ function todayLifeStack(todays){
  const saved=!!((state.intentions||{})[todayStr()]);
  const status=lived?'LIVED':saved?'INTENTION':'SET TODAY';
  const phaseAction=(!lived&&!saved)?`<button onclick="acceptMissionPreset(event)" style="appearance:none;background:none;border:0;padding:8px 0 8px 12px;color:var(--beige);font:inherit;letter-spacing:inherit">${status} →</button>`:`<span class="phase">${status} →</span>`;
- return `<div class="inner" onclick="openIntention()" style="cursor:pointer"><div class="logtop"><div><div class="label">TODAY · LIFE STACK</div><div class="mission" style="font-size:16px;margin-top:5px">今日、どう生きる？</div></div>${phaseAction}</div><div style="margin-top:15px">${rows.map(([k,v])=>`<div style="display:grid;grid-template-columns:82px 1fr;gap:12px;padding:9px 0;border-top:1px solid rgba(196,185,154,.09)"><span class="wmeta">${k}</span><span class="mono" style="font-size:10px;letter-spacing:1.6px;color:${v.length?'var(--white)':'var(--muted)'}">${v.length?v.join(' · '):'—'}</span></div>`).join('')}</div>${intentionGrowsHTML(lived?{move:rows[1][1],mind:rows[2][1],recovery:rows[3][1]}:intent,true,'THIS LIFE GROWS')}<div class="fieldGuide" style="margin-top:8px"><span>${lived?'ACTION → MEMORY':'INTENTION → ACTION → MEMORY'}</span><span>${lived?'TAP TO ADJUST':saved?'SET · TAP TO ADJUST':'MISSION PRESET · ONE TAP SET'}</span></div></div>`;
+ return `<div class="inner" onclick="openIntention()" style="cursor:pointer"><div class="logtop"><div><div class="label">TODAY · LIFE STACK</div><div class="mission" style="font-size:16px;margin-top:5px">今、どう生きる？</div></div>${phaseAction}</div><div style="margin-top:15px">${rows.map(([k,v])=>`<div style="display:grid;grid-template-columns:82px 1fr;gap:12px;padding:9px 0;border-top:1px solid rgba(196,185,154,.09)"><span class="wmeta">${k}</span><span class="mono" style="font-size:10px;letter-spacing:1.6px;color:${v.length?'var(--white)':'var(--muted)'}">${v.length?v.join(' · '):'—'}</span></div>`).join('')}</div>${intentionGrowsHTML(lived?{move:rows[1][1],mind:rows[2][1],recovery:rows[3][1]}:intent,true,'THIS LIFE GROWS')}<div class="fieldGuide" style="margin-top:8px"><span>${lived?'ACTION → MEMORY':'INTENTION → ACTION → MEMORY'}</span><span>${lived?'TAP TO ADJUST':saved?'SET · TAP TO ADJUST':'MISSION PRESET · ONE TAP SET'}</span></div></div>`;
 }
 
 function intentionModal(){
  const cur=intentionForToday();
  const groups=[['MOVE',['RUN','WALK','STRENGTH','HIIT','YOGA','PILATES','STRETCH','MOBILITY']],['MIND',['MEDITATION','BREATHWORK','MOSO','SLEP']],['RECOVERY',['RECOVERY']]];
- return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">TODAY · INTENTION</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody"><div class="label">今日、どう生きる？</div><div class="mission" style="margin:8px 0 22px">INTENTION → ACTION → MEMORY</div>${groups.map(([g,items])=>`<div class="lifeStackGroup"><div class="lifeStackHead" style="cursor:default"><span class="lifeStackTitle">${g}</span></div><div style="display:grid;gap:10px;padding:12px 0 18px">${items.map(a=>`<label class="lifeActivityOption"><input type="checkbox" name="intent_${g}" value="${a}" ${(cur[g.toLowerCase()]||[]).includes(a)?'checked':''}><span>${displayActivity(a)}</span></label>`).join('')}</div></div>`).join('')}${intentionGrowsHTML(cur)}<button class="btn primary" onclick="saveIntention()">SET TODAY →</button><button class="btn" onclick="clearIntention()">CLEAR INTENTION</button><div class="fieldGuide"><span>PLAN LIGHTLY · LIVE FULLY</span><span>LIFE LOG = ACTUAL</span></div></div></div></div>`;
+ return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">TODAY · INTENTION</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody"><div class="label">今、どう生きる？</div><div class="mission" style="margin:8px 0 22px">INTENTION → ACTION → MEMORY</div>${groups.map(([g,items])=>`<div class="lifeStackGroup"><div class="lifeStackHead" style="cursor:default"><span class="lifeStackTitle">${g}</span></div><div style="display:grid;gap:10px;padding:12px 0 18px">${items.map(a=>`<label class="lifeActivityOption"><input type="checkbox" name="intent_${g}" value="${a}" ${(cur[g.toLowerCase()]||[]).includes(a)?'checked':''}><span>${displayActivity(a)}</span></label>`).join('')}</div></div>`).join('')}${intentionGrowsHTML(cur)}<button class="btn primary" onclick="saveIntention()">SET TODAY →</button><button class="btn" onclick="clearIntention()">CLEAR INTENTION</button><div class="fieldGuide"><span>PLAN LIGHTLY · LIVE FULLY</span><span>LIFE LOG = ACTUAL</span></div></div></div></div>`;
 }
 function saveIntention(){
  const pick=g=>[...document.querySelectorAll(`input[name="intent_${g}"]:checked`)].map(x=>x.value);
