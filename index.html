@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v36</title>
+<title>MRC Protocol v37</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -1076,7 +1076,7 @@ function header(){
  <div class="stats"><div class="stat"><small>PROGRESS</small><b>${progress}<span class="muted">/${TOTAL_DAYS}</span></b></div>
  ${st?`<div class="chip">🔥 ${st}D STREAK</div>`:''}
  <div class="stat" style="text-align:right"><small>TARGET</small><b>1:59:00</b></div></div>
- ${(()=>{const seed=loadMosoSeed(),d=seedDays();return `<div class="realityCountdown" onclick="openMosoSeed()" style="cursor:pointer"><div class="days">${d===0?'SEED → REALITY ✨':d+' DAYS TO REALITY'}</div><div class="dest">${seedDateLabel(seed.date)} · ${esc(seed.destination)} · ${esc(seed.target)}</div></div>`})()}
+ ${(()=>{const seed=loadMosoSeed(),d=seedDays();return `<div class="realityCountdown" onclick="openMosoSeed()" style="cursor:pointer"><div class="days">${d===0?'SEED → REALITY ✨':d+' DAYS TO REALITY'}</div><div class="sub" style="margin-top:7px">初期衝動の瞬間を見失わないために。</div><div class="dest">${seedDateLabel(seed.date)} · ${esc(seed.destination)} · ${esc(seed.target)}</div></div>`})()}
  <div class="metrics"><div class="metric"><small>START</small><b>9/1</b></div><div class="metric"><small>RACE PACE</small><b style="color:var(--beige)">${mmss(RACE_PACE)}/km</b></div><div class="metric"><small>RACE DAY</small><b>10/25</b></div></div></div>`;
 }
 function tabs(){return `<div class="tabs">${['today','weeks','schedule','pace','memory','logs'].map(t=>`<button class="tab ${state.tab===t?'on':''}" onclick="setTab('${t}')">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>`}
