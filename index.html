@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v37</title>
+<title>MRC Protocol v35</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -209,6 +209,10 @@ button,input,textarea{font:inherit}button{-webkit-tap-highlight-color:transparen
   animation:seedReceive 1.9s ease-out 1;
 }
 
+
+.nourishmentIntro{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.nourishmentIntro .label{color:var(--beige);opacity:.82;letter-spacing:.20em}
+.nourishmentCopy{margin-top:9px;font-size:13px;line-height:1.8;color:var(--text);opacity:.72}
 </style>
 
 
@@ -1076,7 +1080,7 @@ function header(){
  <div class="stats"><div class="stat"><small>PROGRESS</small><b>${progress}<span class="muted">/${TOTAL_DAYS}</span></b></div>
  ${st?`<div class="chip">🔥 ${st}D STREAK</div>`:''}
  <div class="stat" style="text-align:right"><small>TARGET</small><b>1:59:00</b></div></div>
- ${(()=>{const seed=loadMosoSeed(),d=seedDays();return `<div class="realityCountdown" onclick="openMosoSeed()" style="cursor:pointer"><div class="days">${d===0?'SEED → REALITY ✨':d+' DAYS TO REALITY'}</div><div class="sub" style="margin-top:7px">初期衝動の瞬間を見失わないために。</div><div class="dest">${seedDateLabel(seed.date)} · ${esc(seed.destination)} · ${esc(seed.target)}</div></div>`})()}
+ ${(()=>{const seed=loadMosoSeed(),d=seedDays();return `<div class="realityCountdown" onclick="openMosoSeed()" style="cursor:pointer"><div class="days">${d===0?'SEED → REALITY ✨':d+' DAYS TO REALITY'}</div><div class="dest">${seedDateLabel(seed.date)} · ${esc(seed.destination)} · ${esc(seed.target)}</div></div>`})()}
  <div class="metrics"><div class="metric"><small>START</small><b>9/1</b></div><div class="metric"><small>RACE PACE</small><b style="color:var(--beige)">${mmss(RACE_PACE)}/km</b></div><div class="metric"><small>RACE DAY</small><b>10/25</b></div></div></div>`;
 }
 function tabs(){return `<div class="tabs">${['today','weeks','schedule','pace','memory','logs'].map(t=>`<button class="tab ${state.tab===t?'on':''}" onclick="setTab('${t}')">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>`}
@@ -1141,7 +1145,7 @@ function today(){
 
  return `<div class="content"><div class="card"><div class="cardhead"><span class="eyebrow">TODAY — ${todayMD()} ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]}</span><span class="muted mono">W${String(w).padStart(2,'0')} · ${wDates(w)}</span></div>
  <div class="cardbody"><div class="phase">${gPhase(w)[0]}</div><div class="title">${wd.th}</div><div class="sub">${wd.sb}</div>
- <div class="inner"><div class="label">TODAY'S MISSION</div><div class="mission">${day[2]}</div><div class="line">${detail}</div>${intentionGrowsHTML(intentionForToday(),true,"TODAY'S NOURISHMENT · 今日の養分 → SEED")}</div>
+ <div class="inner"><div class="label">TODAY'S MISSION</div><div class="mission">${day[2]}</div><div class="line">${detail}</div><div class="nourishmentIntro"><div class="label">TODAY'S NOURISHMENT｜今日の養分</div><div class="nourishmentCopy">今日、この妄想が育つために必要な養分。</div></div>${intentionGrowsHTML(intentionForToday(),true,"THIS LIFE GROWS → SEED")}</div>
  ${livingRhythm(todays.length?todays[todays.length-1]:null)}
  ${todayLifeStack(todays)}
  ${todays.length?`<div class="inner"><div class="todayLogHeading"><div class="todayLogTitle">TODAY'S LIFE LOG · ${todayMD()} ${['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()]}</div>${weatherBadge()}</div>${todays.map((l,i)=>`<div class="logitem" onclick="openLog(${state.logs.indexOf(l)})"><div class="logtop"><span class="logkm">${displayActivity(l.activityType||'RUN')}${l.distance?` · ${l.distance}km`:''}${l.pace?` · ${l.pace}/km`:''}${l.durationSec?` · ${secToHMS(l.durationSec)}`:''}${l.avgHr?` · ♥ ${l.avgHr}`:""}</span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><span class="feel">${l.feeling}</span>${logWeatherBadge(l)}${sourceBadge(l)}</span></div>${l.stravaUrl?`<a class="strava" target="_blank" onclick="event.stopPropagation()" href="${l.stravaUrl}">STRAVA →</a>`:''}</div>`).join('')}</div>`:''}
@@ -1422,7 +1426,6 @@ function mosoSeedModal(){
  const seed=selectedId?(selectedExisting?{...selectedExisting}:{id:'seed-'+selectedId,kind:'LIFE',moso:'',why:'',date:selectedId,destination:'',target:''}):loadMosoSeed();
  const eyebrow=selectedId?`MŌSŌ · SEED · ${seed.date}`:'MŌSŌ · SEED';
  return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">${eyebrow}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
- <div style="padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(196,185,154,.11)"><div class="label" style="color:var(--beige)">INITIAL IMPULSE｜初期衝動</div><div class="line" style="margin-top:8px">理由より先に生まれた『やりたい』を大切に。</div></div>
  <div class="label">未来に、ひとつの種を植える。</div><div class="mission" style="margin:8px 0 14px">MŌSŌ → LIFE MEMORY → REALITY</div>${seedGrowthTrackHTML(seed)}
  ${seedLinkedMemoriesHTML(seed)}
  <div class="field"><label>MŌSŌ</label><input id="seedMoso" value="${esc(seed.moso)}" placeholder="ハーフ2時間を切る"></div>
