@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#080806"/>
-<title>MRC Protocol v35</title>
+<title>MRC Protocol v36</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap');
 :root{
@@ -1422,6 +1422,7 @@ function mosoSeedModal(){
  const seed=selectedId?(selectedExisting?{...selectedExisting}:{id:'seed-'+selectedId,kind:'LIFE',moso:'',why:'',date:selectedId,destination:'',target:''}):loadMosoSeed();
  const eyebrow=selectedId?`MŌSŌ · SEED · ${seed.date}`:'MŌSŌ · SEED';
  return `<div class="modal"><div class="sheet"><div class="sheetHead"><span class="eyebrow">${eyebrow}</span><button class="close" onclick="closeModal()">×</button></div><div class="sheetBody">
+ <div style="padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(196,185,154,.11)"><div class="label" style="color:var(--beige)">INITIAL IMPULSE｜初期衝動</div><div class="line" style="margin-top:8px">理由より先に生まれた『やりたい』を大切に。</div></div>
  <div class="label">未来に、ひとつの種を植える。</div><div class="mission" style="margin:8px 0 14px">MŌSŌ → LIFE MEMORY → REALITY</div>${seedGrowthTrackHTML(seed)}
  ${seedLinkedMemoriesHTML(seed)}
  <div class="field"><label>MŌSŌ</label><input id="seedMoso" value="${esc(seed.moso)}" placeholder="ハーフ2時間を切る"></div>
